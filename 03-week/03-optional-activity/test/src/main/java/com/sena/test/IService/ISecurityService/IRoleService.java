@@ -1,5 +1,5 @@
 package com.sena.test.IService.ISecurityService;
 
-public class ISecurityService {
+public class IRoleService {
 
 }
