@@ -4,15 +4,16 @@ import java.util.List;
 import com.sena.test.DTO.SecurityDTO.RoleDTO;
 
 public interface IRoleService {
-    List<RoleDTO> findAll();
 
-    RoleDTO findById(Long id);
+    public List<RoleDTO> findAll(); // busca todos
 
-    RoleDTO save(RoleDTO roleDTO);
+    public RoleDTO findById(Long id); // busca por id
 
-    RoleDTO update(Long id, RoleDTO roleDTO);
+    public List<RoleDTO> filterByName(String nombre); // filtra por nombre
 
-    void delete(Long id);
+    public RoleDTO save(RoleDTO roleDTO); // guarda
 
-    List<RoleDTO> findByName(String roleName);
+    public void delete(Long id); // elimina por id
+
+    public RoleDTO update(Long id, RoleDTO roleDTO); // actualiza
 }
