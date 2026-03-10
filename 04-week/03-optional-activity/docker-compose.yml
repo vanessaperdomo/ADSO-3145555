@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:17
+    container_name: coffee_shop_db
+    restart: always
+    environment:
+      - POSTGRES_USER=laura
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=coffee_shop
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./01_ddl.sql:/docker-entrypoint-initdb.d/01_ddl.sql
+      - ./02_dml.sql:/docker-entrypoint-initdb.d/02_dml.sql
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: coffee_shop_admin
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=p.laurav2@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=laura123
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+ 
+volumes:
+  postgres_data:
