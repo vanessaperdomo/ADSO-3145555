@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  pg-db:
+    image: postgres:17
+    container_name: pg-db
+    environment:
+      POSTGRES_DB: farmacia
+      POSTGRES_USER: laura
+      POSTGRES_PASSWORD: 12345
+    ports:
+      - "5432:5432"
+    networks:
+      - liquibase-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laura -d farmacia"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  liquibase:
+    image: liquibase/liquibase:4.27
+    container_name: liquibase-container
+    depends_on:
+      pg-db:
+        condition: service_healthy
+    volumes:
+      - ./:/liquibase/changelog
+    command: >
+      --url=jdbc:postgresql://pg-db:5432/farmacia
+      --username=laura
+      --password=12345
+      --changeLogFile=/liquibase/changelog/changelog-master.xml
+      --driver=org.postgresql.Driver
+      update
+    networks:
+      - liquibase-net
+
+networks:
+  liquibase-net:
+    driver: bridge
