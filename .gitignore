@@ -1,2 +1,17 @@
+<<<<<<< HEAD
 node_modules/
 package-lock.json
+=======
+﻿# Contraseñas
+lib/liquibase.properties
+
+# Logs
+*.log
+
+# Docker
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db
+>>>>>>> 5b50ae989233361d7e41a0a62f8aed777733f359

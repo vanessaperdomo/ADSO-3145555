@@ -288,4 +288,15 @@
         </rollback>
     </changeSet>
 
+    <!-- 12. Nuevo cambio a producción -->
+    <changeSet id="12" author="vanessa">
+        <comment>Cambio a producción: agrega columna dirección al cliente</comment>
+        <addColumn tableName="cliente">
+            <column name="direccion" type="varchar(200)"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="cliente" columnName="direccion"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
