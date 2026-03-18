@@ -1,0 +1,41 @@
+services:
+
+  db:
+    image: postgres:17        # ✅ ya tienes 17, correcto
+    container_name: pg-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER:     laura          # cambiar a laura (igual que el viejo)
+      POSTGRES_PASSWORD: "12345"        # cambiar a 12345
+      POSTGRES_DB:       farmacia       # cambiar a farmacia
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laura -d farmacia"]   # ajustar
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  liquibase:
+    image: liquibase/liquibase:4.27
+    container_name: liquibase-container   # mismo nombre que antes
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/liquibase/changelog
+    command: >
+      --changelog-file=db.changelog-master.xml
+      --url=jdbc:postgresql://db:5432/farmacia
+      --username=laura
+      --password=12345
+      --driver=org.postgresql.Driver
+      --searchPath=/liquibase/changelog
+      update
+
+volumes:
+  postgres_data:
+    driver: local

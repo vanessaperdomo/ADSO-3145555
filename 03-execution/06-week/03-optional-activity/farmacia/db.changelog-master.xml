@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+    ============================================================
+     FARMACIA DB — Master Changelog
+     Autor:       laura
+     Creado:      2026-03-17
+     Descripción: Archivo raíz que orquesta todos los changesets
+                  agrupados por responsabilidad (DDL → Índices → DML)
+    ============================================================
+    -->
+
+    <!-- 1. Estructura de tablas (DDL) -->
+    <include file="changelogs/ddl/001-create-categoria.xml"       relativeToChangelogFile="true"/>
+    <include file="changelogs/ddl/002-create-proveedor.xml"       relativeToChangelogFile="true"/>
+    <include file="changelogs/ddl/003-create-medicamento.xml"     relativeToChangelogFile="true"/>
+    <include file="changelogs/ddl/004-create-cliente.xml"         relativeToChangelogFile="true"/>
+    <include file="changelogs/ddl/005-create-venta.xml"           relativeToChangelogFile="true"/>
+    <include file="changelogs/ddl/006-create-detalle-venta.xml"   relativeToChangelogFile="true"/>
+
+    <!-- 2. Índices para rendimiento -->
+    <include file="changelogs/indexes/001-indexes.xml"            relativeToChangelogFile="true"/>
+
+    <!-- 3. Datos iniciales (DML) -->
+    <include file="changelogs/dml/001-seed-categorias.xml"        relativeToChangelogFile="true"/>
+    <include file="changelogs/dml/002-seed-proveedores.xml"       relativeToChangelogFile="true"/>
+    <include file="changelogs/dml/003-seed-medicamentos.xml"      relativeToChangelogFile="true"/>
+    <include file="changelogs/dml/004-seed-clientes.xml"          relativeToChangelogFile="true"/>
+    <include file="changelogs/dml/005-seed-ventas.xml"            relativeToChangelogFile="true"/>
+    <include file="changelogs/dml/006-seed-detalle-ventas.xml"    relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

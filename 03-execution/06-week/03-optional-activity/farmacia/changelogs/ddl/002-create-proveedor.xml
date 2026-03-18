@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Tabla: proveedor
+        Almacena los distribuidores y laboratorios que surten la farmacia.
+    -->
+    <changeSet id="ddl-002-create-proveedor" author="laura">
+        <comment>Crea la tabla de proveedores de medicamentos</comment>
+
+        <createTable tableName="proveedor" remarks="Distribuidores y laboratorios proveedores de la farmacia">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_proveedor" nullable="false"/>
+            </column>
+            <column name="nombre" type="VARCHAR(150)" remarks="Razón social del proveedor">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nit" type="VARCHAR(20)" remarks="NIT o identificación tributaria">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uq_proveedor_nit"/>
+            </column>
+            <column name="telefono" type="VARCHAR(20)" remarks="Número de contacto principal"/>
+            <column name="email" type="VARCHAR(150)" remarks="Correo electrónico de contacto">
+                <constraints unique="true" uniqueConstraintName="uq_proveedor_email"/>
+            </column>
+            <column name="direccion" type="VARCHAR(255)" remarks="Dirección física del proveedor"/>
+            <column name="ciudad" type="VARCHAR(100)" remarks="Ciudad donde opera el proveedor"/>
+            <column name="activo" type="BOOLEAN" defaultValueBoolean="true" remarks="Indica si el proveedor está vigente">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="proveedor"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

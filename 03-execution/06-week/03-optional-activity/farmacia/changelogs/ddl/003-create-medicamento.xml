@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Tabla: medicamento
+        Catálogo de productos disponibles en la farmacia.
+    -->
+    <changeSet id="ddl-003-create-medicamento" author="laura">
+        <comment>Crea la tabla catálogo de medicamentos</comment>
+
+        <createTable tableName="medicamento" remarks="Catálogo de medicamentos disponibles en la farmacia">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_medicamento" nullable="false"/>
+            </column>
+            <column name="nombre" type="VARCHAR(200)" remarks="Nombre comercial del medicamento">
+                <constraints nullable="false"/>
+            </column>
+            <column name="principio_activo" type="VARCHAR(200)" remarks="Compuesto farmacológico activo">
+                <constraints nullable="false"/>
+            </column>
+            <column name="categoria_id" type="INT" remarks="FK a la tabla categoria">
+                <constraints nullable="false"
+                             foreignKeyName="fk_medicamento_categoria"
+                             referencedTableName="categoria"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="proveedor_id" type="INT" remarks="FK al proveedor principal">
+                <constraints nullable="false"
+                             foreignKeyName="fk_medicamento_proveedor"
+                             referencedTableName="proveedor"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="forma_farmaceutica" type="VARCHAR(50)" remarks="Tableta, Jarabe, Inyectable, Crema, Cápsula, Gotas, Suspensión, Parche">
+                <constraints nullable="false"/>
+            </column>
+            <column name="concentracion" type="VARCHAR(50)" remarks="Dosis por unidad (ej: 500mg, 250mg/5ml)"/>
+            <column name="precio_compra" type="NUMERIC(12,2)" remarks="Precio de adquisición al proveedor">
+                <constraints nullable="false"/>
+            </column>
+            <column name="precio_venta" type="NUMERIC(12,2)" remarks="Precio de venta al público">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stock" type="INT" defaultValueNumeric="0" remarks="Unidades disponibles en inventario">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stock_minimo" type="INT" defaultValueNumeric="10" remarks="Alerta de reabastecimiento">
+                <constraints nullable="false"/>
+            </column>
+            <column name="requiere_receta" type="BOOLEAN" defaultValueBoolean="false" remarks="Indica si se requiere prescripción médica">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fecha_vencimiento" type="DATE" remarks="Fecha de expiración del lote actual"/>
+            <column name="activo" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE medicamento
+            ADD CONSTRAINT chk_medicamento_forma
+                CHECK (forma_farmaceutica IN ('Tableta','Jarabe','Inyectable','Crema','Cápsula','Gotas','Suspensión','Parche'));
+
+            ALTER TABLE medicamento
+            ADD CONSTRAINT chk_medicamento_precio_compra
+                CHECK (precio_compra > 0);
+
+            ALTER TABLE medicamento
+            ADD CONSTRAINT chk_medicamento_precio_venta
+                CHECK (precio_venta > 0);
+
+            ALTER TABLE medicamento
+            ADD CONSTRAINT chk_medicamento_stock
+                CHECK (stock >= 0);
+        </sql>
+
+        <rollback>
+            <dropTable tableName="medicamento"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

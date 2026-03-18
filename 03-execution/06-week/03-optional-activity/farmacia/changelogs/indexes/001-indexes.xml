@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Índices para optimizar las consultas más frecuentes.
+        Se crean DESPUÉS de las tablas y ANTES de insertar datos.
+    -->
+
+    <changeSet id="idx-001-medicamento" author="laura">
+        <comment>Índices sobre medicamento para JOINs y búsquedas frecuentes</comment>
+
+        <createIndex tableName="medicamento" indexName="idx_medicamento_categoria_id">
+            <column name="categoria_id"/>
+        </createIndex>
+        <createIndex tableName="medicamento" indexName="idx_medicamento_proveedor_id">
+            <column name="proveedor_id"/>
+        </createIndex>
+        <createIndex tableName="medicamento" indexName="idx_medicamento_activo">
+            <column name="activo"/>
+        </createIndex>
+        <createIndex tableName="medicamento" indexName="idx_medicamento_fecha_vencimiento">
+            <column name="fecha_vencimiento"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="medicamento" indexName="idx_medicamento_categoria_id"/>
+            <dropIndex tableName="medicamento" indexName="idx_medicamento_proveedor_id"/>
+            <dropIndex tableName="medicamento" indexName="idx_medicamento_activo"/>
+            <dropIndex tableName="medicamento" indexName="idx_medicamento_fecha_vencimiento"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="idx-002-venta" author="laura">
+        <comment>Índices sobre venta para reportes por fecha y cliente</comment>
+
+        <createIndex tableName="venta" indexName="idx_venta_cliente_id">
+            <column name="cliente_id"/>
+        </createIndex>
+        <createIndex tableName="venta" indexName="idx_venta_fecha_venta">
+            <column name="fecha_venta"/>
+        </createIndex>
+        <createIndex tableName="venta" indexName="idx_venta_estado">
+            <column name="estado"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="venta" indexName="idx_venta_cliente_id"/>
+            <dropIndex tableName="venta" indexName="idx_venta_fecha_venta"/>
+            <dropIndex tableName="venta" indexName="idx_venta_estado"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="idx-003-detalle-venta" author="laura">
+        <comment>Índices sobre detalle_venta para reportes de ventas por medicamento</comment>
+
+        <createIndex tableName="detalle_venta" indexName="idx_detalle_venta_id">
+            <column name="venta_id"/>
+        </createIndex>
+        <createIndex tableName="detalle_venta" indexName="idx_detalle_medicamento_id">
+            <column name="medicamento_id"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="detalle_venta" indexName="idx_detalle_venta_id"/>
+            <dropIndex tableName="detalle_venta" indexName="idx_detalle_medicamento_id"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

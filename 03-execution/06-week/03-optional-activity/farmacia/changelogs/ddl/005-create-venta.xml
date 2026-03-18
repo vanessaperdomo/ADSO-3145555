@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Tabla: venta
+        Cabecera de cada transacción de venta en la farmacia.
+    -->
+    <changeSet id="ddl-005-create-venta" author="laura">
+        <comment>Crea la tabla cabecera de ventas</comment>
+
+        <createTable tableName="venta" remarks="Registro de ventas realizadas en la farmacia">
+            <column name="id" type="SERIAL">
+                <constraints primaryKey="true" primaryKeyName="pk_venta" nullable="false"/>
+            </column>
+            <column name="cliente_id" type="INT" remarks="FK al cliente comprador (nullable: venta anónima)">
+                <constraints foreignKeyName="fk_venta_cliente"
+                             referencedTableName="cliente"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="fecha_venta" type="TIMESTAMP" defaultValueComputed="NOW()" remarks="Fecha y hora de la transacción">
+                <constraints nullable="false"/>
+            </column>
+            <column name="total" type="NUMERIC(14,2)" remarks="Valor total de la venta">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metodo_pago" type="VARCHAR(30)" remarks="Efectivo, Tarjeta, Transferencia, Nequi, Daviplata">
+                <constraints nullable="false"/>
+            </column>
+            <column name="estado" type="VARCHAR(20)" defaultValue="Completada" remarks="Completada, Anulada, Pendiente">
+                <constraints nullable="false"/>
+            </column>
+            <column name="observaciones" type="TEXT" remarks="Notas adicionales sobre la venta"/>
+            <column name="created_at" type="TIMESTAMP" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <sql>
+            ALTER TABLE venta
+            ADD CONSTRAINT chk_venta_metodo_pago
+                CHECK (metodo_pago IN ('Efectivo','Tarjeta','Transferencia','Nequi','Daviplata'));
+
+            ALTER TABLE venta
+            ADD CONSTRAINT chk_venta_estado
+                CHECK (estado IN ('Completada','Anulada','Pendiente'));
+
+            ALTER TABLE venta
+            ADD CONSTRAINT chk_venta_total
+                CHECK (total >= 0);
+        </sql>
+
+        <rollback>
+            <dropTable tableName="venta"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

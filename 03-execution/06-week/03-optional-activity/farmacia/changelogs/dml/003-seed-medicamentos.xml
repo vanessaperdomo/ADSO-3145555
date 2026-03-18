@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="dml-003-seed-medicamentos" author="laura">
+        <comment>Datos iniciales: catálogo de medicamentos de la farmacia</comment>
+
+        <!-- Analgésicos (categoria_id=1) -->
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Dolex Forte"/>
+            <column name="principio_activo"   value="Acetaminofén"/>
+            <column name="categoria_id"       valueNumeric="1"/>
+            <column name="proveedor_id"       valueNumeric="2"/>
+            <column name="forma_farmaceutica" value="Tableta"/>
+            <column name="concentracion"      value="500mg"/>
+            <column name="precio_compra"      valueNumeric="2500.00"/>
+            <column name="precio_venta"       valueNumeric="4800.00"/>
+            <column name="stock"              valueNumeric="320"/>
+            <column name="stock_minimo"       valueNumeric="50"/>
+            <column name="requiere_receta"    valueBoolean="false"/>
+            <column name="fecha_vencimiento"  valueDate="2027-06-30"/>
+        </insert>
+
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Ibuprofeno Genfar"/>
+            <column name="principio_activo"   value="Ibuprofeno"/>
+            <column name="categoria_id"       valueNumeric="1"/>
+            <column name="proveedor_id"       valueNumeric="2"/>
+            <column name="forma_farmaceutica" value="Tableta"/>
+            <column name="concentracion"      value="400mg"/>
+            <column name="precio_compra"      valueNumeric="1800.00"/>
+            <column name="precio_venta"       valueNumeric="3500.00"/>
+            <column name="stock"              valueNumeric="250"/>
+            <column name="stock_minimo"       valueNumeric="40"/>
+            <column name="requiere_receta"    valueBoolean="false"/>
+            <column name="fecha_vencimiento"  valueDate="2027-03-31"/>
+        </insert>
+
+        <!-- Antibióticos (categoria_id=2) -->
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Amoxicilina Mk"/>
+            <column name="principio_activo"   value="Amoxicilina trihidratada"/>
+            <column name="categoria_id"       valueNumeric="2"/>
+            <column name="proveedor_id"       valueNumeric="3"/>
+            <column name="forma_farmaceutica" value="Cápsula"/>
+            <column name="concentracion"      value="500mg"/>
+            <column name="precio_compra"      valueNumeric="4500.00"/>
+            <column name="precio_venta"       valueNumeric="8900.00"/>
+            <column name="stock"              valueNumeric="180"/>
+            <column name="stock_minimo"       valueNumeric="30"/>
+            <column name="requiere_receta"    valueBoolean="true"/>
+            <column name="fecha_vencimiento"  valueDate="2026-12-31"/>
+        </insert>
+
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Azitromicina Bayer"/>
+            <column name="principio_activo"   value="Azitromicina dihidratada"/>
+            <column name="categoria_id"       valueNumeric="2"/>
+            <column name="proveedor_id"       valueNumeric="1"/>
+            <column name="forma_farmaceutica" value="Tableta"/>
+            <column name="concentracion"      value="500mg"/>
+            <column name="precio_compra"      valueNumeric="9000.00"/>
+            <column name="precio_venta"       valueNumeric="16500.00"/>
+            <column name="stock"              valueNumeric="90"/>
+            <column name="stock_minimo"       valueNumeric="20"/>
+            <column name="requiere_receta"    valueBoolean="true"/>
+            <column name="fecha_vencimiento"  valueDate="2027-01-31"/>
+        </insert>
+
+        <!-- Antihipertensivos (categoria_id=4) -->
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Losartán Potásico Lafrancol"/>
+            <column name="principio_activo"   value="Losartán potásico"/>
+            <column name="categoria_id"       valueNumeric="4"/>
+            <column name="proveedor_id"       valueNumeric="3"/>
+            <column name="forma_farmaceutica" value="Tableta"/>
+            <column name="concentracion"      value="50mg"/>
+            <column name="precio_compra"      valueNumeric="3200.00"/>
+            <column name="precio_venta"       valueNumeric="6000.00"/>
+            <column name="stock"              valueNumeric="210"/>
+            <column name="stock_minimo"       valueNumeric="40"/>
+            <column name="requiere_receta"    valueBoolean="true"/>
+            <column name="fecha_vencimiento"  valueDate="2027-08-31"/>
+        </insert>
+
+        <!-- Antidiabético (categoria_id=5) -->
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Metformina Pfizer"/>
+            <column name="principio_activo"   value="Metformina clorhidrato"/>
+            <column name="categoria_id"       valueNumeric="5"/>
+            <column name="proveedor_id"       valueNumeric="4"/>
+            <column name="forma_farmaceutica" value="Tableta"/>
+            <column name="concentracion"      value="850mg"/>
+            <column name="precio_compra"      valueNumeric="2800.00"/>
+            <column name="precio_venta"       valueNumeric="5200.00"/>
+            <column name="stock"              valueNumeric="160"/>
+            <column name="stock_minimo"       valueNumeric="30"/>
+            <column name="requiere_receta"    valueBoolean="true"/>
+            <column name="fecha_vencimiento"  valueDate="2027-05-31"/>
+        </insert>
+
+        <!-- Antihistamínico (categoria_id=6) -->
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Loratadina Mk"/>
+            <column name="principio_activo"   value="Loratadina"/>
+            <column name="categoria_id"       valueNumeric="6"/>
+            <column name="proveedor_id"       valueNumeric="2"/>
+            <column name="forma_farmaceutica" value="Tableta"/>
+            <column name="concentracion"      value="10mg"/>
+            <column name="precio_compra"      valueNumeric="1500.00"/>
+            <column name="precio_venta"       valueNumeric="2900.00"/>
+            <column name="stock"              valueNumeric="300"/>
+            <column name="stock_minimo"       valueNumeric="50"/>
+            <column name="requiere_receta"    valueBoolean="false"/>
+            <column name="fecha_vencimiento"  valueDate="2028-01-31"/>
+        </insert>
+
+        <!-- Gastroprotector (categoria_id=8) -->
+        <insert tableName="medicamento">
+            <column name="nombre"             value="Omeprazol Farma Sur"/>
+            <column name="principio_activo"   value="Omeprazol"/>
+            <column name="categoria_id"       valueNumeric="8"/>
+            <column name="proveedor_id"       valueNumeric="5"/>
+            <column name="forma_farmaceutica" value="Cápsula"/>
+            <column name="concentracion"      value="20mg"/>
+            <column name="precio_compra"      valueNumeric="2200.00"/>
+            <column name="precio_venta"       valueNumeric="4200.00"/>
+            <column name="stock"              valueNumeric="8"/>
+            <column name="stock_minimo"       valueNumeric="30"/>
+            <column name="requiere_receta"    valueBoolean="false"/>
+            <column name="fecha_vencimiento"  valueDate="2026-09-30"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="medicamento">
+                <where>nombre IN (
+                    'Dolex Forte','Ibuprofeno Genfar','Amoxicilina Mk','Azitromicina Bayer',
+                    'Losartán Potásico Lafrancol','Metformina Pfizer','Loratadina Mk','Omeprazol Farma Sur'
+                )</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
