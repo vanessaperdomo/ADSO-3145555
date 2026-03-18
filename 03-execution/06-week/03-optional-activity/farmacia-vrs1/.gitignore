@@ -1,0 +1,12 @@
+﻿# Contraseñas
+lib/liquibase.properties
+
+# Logs
+*.log
+
+# Docker
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db
