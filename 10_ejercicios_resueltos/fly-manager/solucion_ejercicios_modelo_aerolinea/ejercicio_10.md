@@ -1,0 +1,4 @@
+✅ RESUMEN EJERCICIO 10 — Identidad de pasajeros, documentos y contactos
+Req 1 — Consulta INNER JOIN (6 tablas): Conectó person → person_type → person_document → document_type → person_contact → contact_type. Devolvió 7 registros reales con pasajeros, sus tipos de documento (Pasaporte, Documento nacional) y medios de contacto.
+Req 2 — Trigger AFTER INSERT OR UPDATE: Se creó trg_ej10_auditar_documento sobre person_document. Al insertar registra el nuevo documento con nombre del pasajero y número. Al actualizar registra el cambio mostrando el número anterior y el nuevo. ✅ Validado con [IDENTIDAD] Nuevo documento registrado para "Ana Garcia".
+Req 3 — Procedimiento almacenado: Se creó sp_ej10_registrar_documento que recibe person_id, tipo de documento, país emisor, número, fecha de expedición y vencimiento, registrando el documento y activando el trigger automáticamente.

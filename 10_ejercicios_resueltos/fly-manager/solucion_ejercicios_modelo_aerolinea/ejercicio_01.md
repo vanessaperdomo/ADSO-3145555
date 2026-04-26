@@ -1,0 +1,5 @@
+✅ RESUMEN EJERCICIO 01 — Check-in y trazabilidad comercial
+Lo que se hizo:
+Req 1 — Consulta INNER JOIN (7 tablas): Se consultó la trazabilidad completa de pasajeros por vuelo uniendo reservation → reservation_passenger → person → ticket → ticket_segment → flight_segment → flight. Devolvió 4 registros reales con códigos de reserva, vuelos, tiquetes y pasajeros.
+Req 2 — Trigger AFTER INSERT: Se creó trg_ej01_generar_boarding_pass sobre la tabla check_in. Cada vez que se registra un check-in, automáticamente genera un registro en boarding_pass con código y barcode únicos. La validación confirmó 4 boarding passes existentes vinculados a sus check-ins.
+Req 3 — Procedimiento almacenado: Se creó sp_ej01_registrar_checkin que recibe 4 parámetros UUID y registra el check-in del pasajero, activando automáticamente el trigger.

@@ -1,0 +1,4 @@
+✅ RESUMEN EJERCICIO 05 — Mantenimiento de aeronaves
+Req 1 — Consulta INNER JOIN (5 tablas): Conectó maintenance_event → aircraft → aircraft_model → maintenance_type → maintenance_provider. Devolvió 2 registros reales mostrando aeronaves HK-5500 y HK-7870 con sus tipos y proveedores de mantenimiento.
+Req 2 — Trigger AFTER INSERT OR UPDATE: Se creó trg_ej05_log_mantenimiento sobre maintenance_event. Al insertar un nuevo evento registra el ingreso a mantenimiento, y al actualizar con completed_at registra la finalización. ✅ Validado con el NOTICE [MANTENIMIENTO] Aeronave 3db13de5...
+Req 3 — Procedimiento almacenado: Se creó sp_ej05_registrar_mantenimiento que recibe aircraft_id, tipo, proveedor, estado, fecha de inicio y notas, registrando el evento y activando el trigger automáticamente.

@@ -1,0 +1,4 @@
+✅ RESUMEN EJERCICIO 06 — Retrasos operativos
+Req 1 — Consulta INNER JOIN (5 tablas): Conectó flight_delay → flight_segment → flight → flight_status → delay_reason_type. Devolvió 1 registro real mostrando el vuelo FY101 con su retraso registrado.
+Req 2 — Trigger AFTER INSERT: Se creó trg_ej06_vuelo_delayed sobre flight_delay. Cada vez que se registra una demora, actualiza automáticamente el estado del vuelo a "Demorado". ✅ Validado con el NOTICE [RETRASO].
+Req 3 — Procedimiento almacenado: Se creó sp_ej06_registrar_demora que recibe flight_segment_id, tipo de razón, minutos de retraso y notas, registrando la demora y activando el trigger automáticamente.
