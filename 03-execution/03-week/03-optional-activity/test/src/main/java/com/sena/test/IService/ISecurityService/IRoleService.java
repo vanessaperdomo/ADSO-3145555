@@ -1,19 +1,17 @@
 package com.sena.test.IService.ISecurityService;
 
+import com.sena.test.DTO.SecurityDTO.RoleDto;
 import java.util.List;
-import com.sena.test.DTO.SecurityDTO.RoleDTO;
+import java.util.UUID;
 
 public interface IRoleService {
+    List<RoleDto> getAll();
 
-    public List<RoleDTO> findAll(); // busca todos
+    RoleDto getById(UUID id);
 
-    public RoleDTO findById(Long id); // busca por id
+    RoleDto create(RoleDto dto);
 
-    public List<RoleDTO> filterByName(String nombre); // filtra por nombre
+    RoleDto update(UUID id, RoleDto dto);
 
-    public RoleDTO save(RoleDTO roleDTO); // guarda
-
-    public void delete(Long id); // elimina por id
-
-    public RoleDTO update(Long id, RoleDTO roleDTO); // actualiza
+    void delete(UUID id);
 }

@@ -18,43 +18,38 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("") // traer todas las personas
+    @GetMapping("")
     public ResponseEntity<Object> findAll() {
-        return new ResponseEntity<Object>(
-                userService.findAll(),
-                HttpStatus.OK);
+        return new ResponseEntity<Object>(userService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("") // crea una persona
+    @PostMapping("")
     public ResponseEntity<Object> save(@RequestBody UserDto userDto) {
         userService.save(userDto);
-        return new ResponseEntity<Object>("Usuario creado correctamente",
-                HttpStatus.OK);
+        return new ResponseEntity<Object>("Usuario creado correctamente", HttpStatus.OK);
     }
 
-    @GetMapping("{id}") // la persona se busca por id
+    @GetMapping("{id}")
     public ResponseEntity<Object> findById(@PathVariable int id) {
-        User user = userService.findById(id); // variable persona llama a una sola persona
+        User user = userService.findById(id);
         return new ResponseEntity<Object>(user, HttpStatus.OK);
     }
 
     @GetMapping("filterbyname/{nombre}")
     public ResponseEntity<Object> filterByName(@PathVariable String nombre) {
-        List<User> users = userService.filterByName(nombre); // variable personas llama a muchos
+        List<User> users = userService.filterByName(nombre);
         return new ResponseEntity<Object>(users, HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}") // elimina por id
+    @DeleteMapping("{id}")
     public ResponseEntity<Object> delete(@PathVariable int id) {
         userService.delete(id);
         return new ResponseEntity<Object>("Usuario eliminado", HttpStatus.OK);
     }
 
-    @PutMapping("{id}") // actualiza por id
+    @PutMapping("{id}")
     public ResponseEntity<Object> update(@PathVariable int id, @RequestBody UserDto userDto) {
         userService.update(id, userDto);
-        return new ResponseEntity<Object>(
-                "Usuario actualizado correctamente",
-                HttpStatus.OK);
+        return new ResponseEntity<Object>("Usuario actualizado correctamente", HttpStatus.OK);
     }
 }

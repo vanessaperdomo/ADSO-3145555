@@ -1,23 +1,20 @@
 package com.sena.test.DTO.SecurityDTO;
 
-public class RoleDTO {
+import java.util.UUID;
 
-    private long id;
+public class RoleDto {
+
+    private UUID id;
     private String roleName;
 
-    public RoleDTO() {
+    public RoleDto() {
     }
 
-    public RoleDTO(long id, String roleName) {
-        this.id = id;
-        this.roleName = roleName;
-    }
-
-    public long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

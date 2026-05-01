@@ -4,7 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sena.test.IRepository.PersonRepository;
+import com.sena.test.Repository.PersonRepository;
 import com.sena.test.entity.Person;
 import com.sena.test.dto.PersonDto;
 import com.sena.test.service.PersonService;

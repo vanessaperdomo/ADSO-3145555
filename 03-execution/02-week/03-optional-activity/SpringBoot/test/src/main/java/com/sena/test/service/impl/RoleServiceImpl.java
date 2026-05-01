@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sena.test.IRepository.RoleRepository;
+import com.sena.test.Repository.RoleRepository;
 import com.sena.test.entity.Role;
 import com.sena.test.dto.RoleDto;
 import com.sena.test.service.RoleService;
