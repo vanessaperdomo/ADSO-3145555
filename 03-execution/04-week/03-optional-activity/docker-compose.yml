@@ -9,11 +9,11 @@ services:
       - POSTGRES_PASSWORD=12345
       - POSTGRES_DB=coffee_shop
     ports:
-      - "5433:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./01_ddl.sql:/docker-entrypoint-initdb.d/01_ddl.sql
-      - ./02_dml.sql:/docker-entrypoint-initdb.d/02_dml.sql
+      - ./ddl_CafetinSena_db_actaulizada.sql:/docker-entrypoint-initdb.d/ddl_CafetinSena_db_actaulizada.sql
+      - ./dml_CafetinSena_db_actualizada.sql:/docker-entrypoint-initdb.d/dml_CafetinSena_db_actualizada.sql
 
   pgadmin:
     image: dpage/pgadmin4
