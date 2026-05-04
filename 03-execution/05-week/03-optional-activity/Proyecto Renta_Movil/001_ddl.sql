@@ -6,9 +6,10 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ==========================================
 -- MODULE 0: ESTADO GLOBAL
+-- Tabla central de estados reutilizada por todos los módulos
 -- ==========================================
 
-CREATE TABLE status ( -- Estado
+CREATE TABLE status (
     id          UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(50) NOT NULL UNIQUE,
     description TEXT,
@@ -18,12 +19,10 @@ CREATE TABLE status ( -- Estado
 );
 
 -- ==========================================
--- MODULE 1: PARÁMETROS
--- Nota: created_by/updated_by/deleted_by sin FK
--- porque users aún no existe en este punto.
+-- MODULE 1: PARÁMETROS BASE
 -- ==========================================
 
-CREATE TABLE document_type ( -- Tipo de documento
+CREATE TABLE document_type (
     id          UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(50) NOT NULL UNIQUE,
     created_at  TIMESTAMPTZ DEFAULT NOW(),
@@ -35,7 +34,7 @@ CREATE TABLE document_type ( -- Tipo de documento
     status_id   UUID        REFERENCES status(id)
 );
 
-CREATE TABLE country ( -- País
+CREATE TABLE country (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(100) NOT NULL UNIQUE,
     code        VARCHAR(5)   NOT NULL UNIQUE,
@@ -48,7 +47,7 @@ CREATE TABLE country ( -- País
     status_id   UUID         REFERENCES status(id)
 );
 
-CREATE TABLE city ( -- Ciudad
+CREATE TABLE city (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(100) NOT NULL,
     country_id  UUID         NOT NULL REFERENCES country(id),
@@ -61,7 +60,7 @@ CREATE TABLE city ( -- Ciudad
     status_id   UUID         REFERENCES status(id)
 );
 
-CREATE TABLE language ( -- Idioma
+CREATE TABLE language (
     id          UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(50) NOT NULL UNIQUE,
     code        VARCHAR(10) NOT NULL UNIQUE,
@@ -74,7 +73,7 @@ CREATE TABLE language ( -- Idioma
     status_id   UUID        REFERENCES status(id)
 );
 
-CREATE TABLE person ( -- Persona
+CREATE TABLE person (
     id               UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     first_name       VARCHAR(100) NOT NULL,
     last_name        VARCHAR(100) NOT NULL,
@@ -94,11 +93,20 @@ CREATE TABLE person ( -- Persona
     status_id        UUID         REFERENCES status(id)
 );
 
-CREATE TABLE file ( -- Archivo
+-- ==========================================
+-- Tabla FILE polimórfica: centraliza todos los archivos del sistema
+-- Reemplaza maintenance_file y complaint_file
+-- entity_type indica a qué tabla pertenece el archivo
+-- entity_id referencia el registro específico
+-- ==========================================
+
+CREATE TABLE file (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     file_name   VARCHAR(255) NOT NULL,
     file_url    VARCHAR(500) NOT NULL,
     file_type   VARCHAR(50),
+    entity_type VARCHAR(50)  NOT NULL CHECK (entity_type IN ('PERSON','MAINTENANCE','COMPLAINT','VEHICLE','CONTRACT','DRIVER_LICENSE')),
+    entity_id   UUID         NOT NULL,
     person_id   UUID         REFERENCES person(id),
     created_at  TIMESTAMPTZ  DEFAULT NOW(),
     updated_at  TIMESTAMPTZ,
@@ -111,10 +119,9 @@ CREATE TABLE file ( -- Archivo
 
 -- ==========================================
 -- MODULE 2: SEGURIDAD
--- Desde aquí users existe; todas las FK de auditoría se declaran inline.
 -- ==========================================
 
-CREATE TABLE users ( -- Usuarios
+CREATE TABLE users (
     id                 UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     username           VARCHAR(100) NOT NULL UNIQUE,
     password           VARCHAR(255) NOT NULL,
@@ -133,7 +140,32 @@ CREATE TABLE users ( -- Usuarios
     status_id          UUID         REFERENCES status(id)
 );
 
-CREATE TABLE user_preference ( -- Preferencias del usuario
+-- Ahora que users existe, agregamos las FK de auditoría en las tablas anteriores
+ALTER TABLE document_type ADD CONSTRAINT fk_doctype_created_by FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE document_type ADD CONSTRAINT fk_doctype_updated_by FOREIGN KEY (updated_by) REFERENCES users(id);
+ALTER TABLE document_type ADD CONSTRAINT fk_doctype_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(id);
+
+ALTER TABLE country ADD CONSTRAINT fk_country_created_by FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE country ADD CONSTRAINT fk_country_updated_by FOREIGN KEY (updated_by) REFERENCES users(id);
+ALTER TABLE country ADD CONSTRAINT fk_country_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(id);
+
+ALTER TABLE city ADD CONSTRAINT fk_city_created_by FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE city ADD CONSTRAINT fk_city_updated_by FOREIGN KEY (updated_by) REFERENCES users(id);
+ALTER TABLE city ADD CONSTRAINT fk_city_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(id);
+
+ALTER TABLE language ADD CONSTRAINT fk_language_created_by FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE language ADD CONSTRAINT fk_language_updated_by FOREIGN KEY (updated_by) REFERENCES users(id);
+ALTER TABLE language ADD CONSTRAINT fk_language_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(id);
+
+ALTER TABLE person ADD CONSTRAINT fk_person_created_by FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE person ADD CONSTRAINT fk_person_updated_by FOREIGN KEY (updated_by) REFERENCES users(id);
+ALTER TABLE person ADD CONSTRAINT fk_person_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(id);
+
+ALTER TABLE file ADD CONSTRAINT fk_file_created_by FOREIGN KEY (created_by) REFERENCES users(id);
+ALTER TABLE file ADD CONSTRAINT fk_file_updated_by FOREIGN KEY (updated_by) REFERENCES users(id);
+ALTER TABLE file ADD CONSTRAINT fk_file_deleted_by FOREIGN KEY (deleted_by) REFERENCES users(id);
+
+CREATE TABLE user_preference (
     id                 UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     theme              VARCHAR(20) NOT NULL DEFAULT 'light'
                            CHECK (theme IN ('light', 'dark')),
@@ -151,7 +183,7 @@ CREATE TABLE user_preference ( -- Preferencias del usuario
     status_id          UUID        REFERENCES status(id)
 );
 
-CREATE TABLE user_session ( -- Sesión de usuario
+CREATE TABLE user_session (
     id            UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     refresh_token VARCHAR(500) NOT NULL UNIQUE,
     ip_address    VARCHAR(50),
@@ -167,7 +199,7 @@ CREATE TABLE user_session ( -- Sesión de usuario
     status_id     UUID         REFERENCES status(id)
 );
 
-CREATE TABLE role ( -- Rol
+CREATE TABLE role (
     id          UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(50) NOT NULL UNIQUE,
     description TEXT,
@@ -180,7 +212,7 @@ CREATE TABLE role ( -- Rol
     status_id   UUID        REFERENCES status(id)
 );
 
-CREATE TABLE module ( -- Módulo
+CREATE TABLE module (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
@@ -193,11 +225,12 @@ CREATE TABLE module ( -- Módulo
     status_id   UUID         REFERENCES status(id)
 );
 
-CREATE TABLE view ( -- Vista
+CREATE TABLE view (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(100) NOT NULL,
     route       VARCHAR(255),
     description TEXT,
+    module_id   UUID         NOT NULL REFERENCES module(id),  -- FK directa: toda vista pertenece a un módulo
     created_at  TIMESTAMPTZ  DEFAULT NOW(),
     updated_at  TIMESTAMPTZ,
     deleted_at  TIMESTAMPTZ,
@@ -207,7 +240,11 @@ CREATE TABLE view ( -- Vista
     status_id   UUID         REFERENCES status(id)
 );
 
-CREATE TABLE user_role ( -- Rol del usuario
+-- NOTA: Se elimina module_view como tabla pivote.
+-- La relación view→module ahora es directa (module_id en view).
+-- Una vista pertenece a un solo módulo, lo cual es la regla de negocio correcta.
+
+CREATE TABLE user_role (
     user_id    UUID        NOT NULL REFERENCES users(id),
     role_id    UUID        NOT NULL REFERENCES role(id),
     PRIMARY KEY (user_id, role_id),
@@ -220,7 +257,7 @@ CREATE TABLE user_role ( -- Rol del usuario
     status_id  UUID        REFERENCES status(id)
 );
 
-CREATE TABLE role_module ( -- Módulo del rol
+CREATE TABLE role_module (
     role_id    UUID        NOT NULL REFERENCES role(id),
     module_id  UUID        NOT NULL REFERENCES module(id),
     PRIMARY KEY (role_id, module_id),
@@ -233,20 +270,7 @@ CREATE TABLE role_module ( -- Módulo del rol
     status_id  UUID        REFERENCES status(id)
 );
 
-CREATE TABLE module_view ( -- Vista del módulo
-    module_id  UUID        NOT NULL REFERENCES module(id),
-    view_id    UUID        NOT NULL REFERENCES view(id),
-    PRIMARY KEY (module_id, view_id),
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ,
-    created_by UUID        REFERENCES users(id),
-    updated_by UUID        REFERENCES users(id),
-    deleted_by UUID        REFERENCES users(id),
-    status_id  UUID        REFERENCES status(id)
-);
-
-CREATE TABLE password_reset_token ( -- Token de restablecimiento de contraseña
+CREATE TABLE password_reset_token (
     id         UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     token      VARCHAR(255) NOT NULL UNIQUE,
     expires_at TIMESTAMPTZ  NOT NULL,
@@ -256,7 +280,7 @@ CREATE TABLE password_reset_token ( -- Token de restablecimiento de contraseña
     status_id  UUID         REFERENCES status(id)
 );
 
-CREATE TABLE two_factor_code ( -- Código de doble factor
+CREATE TABLE two_factor_code (
     id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     code       VARCHAR(10) NOT NULL,
     expires_at TIMESTAMPTZ NOT NULL,
@@ -270,7 +294,7 @@ CREATE TABLE two_factor_code ( -- Código de doble factor
 -- MODULE 3: FLOTA Y VEHÍCULOS
 -- ==========================================
 
-CREATE TABLE vehicle_category ( -- Categoría de vehículo
+CREATE TABLE vehicle_category (
     id          UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(100)  NOT NULL UNIQUE,
     description TEXT,
@@ -284,7 +308,7 @@ CREATE TABLE vehicle_category ( -- Categoría de vehículo
     status_id   UUID          REFERENCES status(id)
 );
 
-CREATE TABLE branch ( -- Sucursal
+CREATE TABLE branch (
     id         UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name       VARCHAR(150) NOT NULL UNIQUE,
     address    VARCHAR(255) NOT NULL,
@@ -303,7 +327,7 @@ CREATE TABLE branch ( -- Sucursal
     status_id  UUID         REFERENCES status(id)
 );
 
-CREATE TABLE fleet ( -- Flota
+CREATE TABLE fleet (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(150) NOT NULL,
     code        VARCHAR(50)  NOT NULL UNIQUE,
@@ -318,7 +342,7 @@ CREATE TABLE fleet ( -- Flota
     status_id   UUID         REFERENCES status(id)
 );
 
-CREATE TABLE vehicle ( -- Vehículo
+CREATE TABLE vehicle (
     id                  UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     brand               VARCHAR(100)  NOT NULL,
     model               VARCHAR(100)  NOT NULL,
@@ -345,7 +369,7 @@ CREATE TABLE vehicle ( -- Vehículo
     status_id           UUID          REFERENCES status(id)
 );
 
-CREATE TABLE vehicle_image ( -- Imagen del vehículo
+CREATE TABLE vehicle_image (
     id         UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     image_url  VARCHAR(500) NOT NULL,
     is_main    BOOLEAN      NOT NULL DEFAULT FALSE,
@@ -359,7 +383,7 @@ CREATE TABLE vehicle_image ( -- Imagen del vehículo
     status_id  UUID         REFERENCES status(id)
 );
 
-CREATE TABLE insurance ( -- Seguro
+CREATE TABLE insurance (
     id              UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name            VARCHAR(100) NOT NULL,
     policy_number   VARCHAR(100) NOT NULL UNIQUE,
@@ -376,7 +400,7 @@ CREATE TABLE insurance ( -- Seguro
     status_id       UUID         REFERENCES status(id)
 );
 
-CREATE TABLE maintenance ( -- Mantenimiento
+CREATE TABLE maintenance (
     id                 UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     maintenance_type   VARCHAR(30)   NOT NULL CHECK (maintenance_type IN ('PREVENTIVE','CORRECTIVE','URGENT','AESTHETIC')),
     description        TEXT          NOT NULL,
@@ -397,21 +421,10 @@ CREATE TABLE maintenance ( -- Mantenimiento
     status_id          UUID          REFERENCES status(id)
 );
 
-CREATE TABLE maintenance_file ( -- Archivo de mantenimiento
-    id             UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
-    file_url       VARCHAR(500) NOT NULL,
-    file_type      VARCHAR(50),
-    maintenance_id UUID         NOT NULL REFERENCES maintenance(id),
-    created_at     TIMESTAMPTZ  DEFAULT NOW(),
-    updated_at     TIMESTAMPTZ,
-    deleted_at     TIMESTAMPTZ,
-    created_by     UUID         REFERENCES users(id),
-    updated_by     UUID         REFERENCES users(id),
-    deleted_by     UUID         REFERENCES users(id),
-    status_id      UUID         REFERENCES status(id)
-);
+-- NOTA: maintenance_file y complaint_file fueron eliminadas.
+-- Sus archivos ahora se almacenan en la tabla FILE con entity_type = 'MAINTENANCE' o 'COMPLAINT'.
 
-CREATE TABLE additional_service ( -- Servicio adicional
+CREATE TABLE additional_service (
     id          UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(150)  NOT NULL,
     description TEXT,
@@ -426,7 +439,7 @@ CREATE TABLE additional_service ( -- Servicio adicional
     status_id   UUID          REFERENCES status(id)
 );
 
-CREATE TABLE vehicle_additional_service ( -- Servicio adicional del vehículo
+CREATE TABLE vehicle_additional_service (
     vehicle_id            UUID NOT NULL REFERENCES vehicle(id),
     additional_service_id UUID NOT NULL REFERENCES additional_service(id),
     PRIMARY KEY (vehicle_id, additional_service_id),
@@ -435,26 +448,16 @@ CREATE TABLE vehicle_additional_service ( -- Servicio adicional del vehículo
 );
 
 -- ==========================================
--- MODULE 4: CLIENTES Y VALIDACIÓN DE LICENCIA
+-- MODULE 4: CLIENTES Y LICENCIAS
+-- customer_type eliminada: el tipo se maneja con CHECK en customer
 -- ==========================================
 
-CREATE TABLE customer_type ( -- Tipo de cliente
-    id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name       VARCHAR(50) NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ,
-    created_by UUID        REFERENCES users(id),
-    updated_by UUID        REFERENCES users(id),
-    deleted_by UUID        REFERENCES users(id),
-    status_id  UUID        REFERENCES status(id)
-);
-
-CREATE TABLE customer ( -- Cliente
+CREATE TABLE customer (
     id               UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    customer_type    VARCHAR(30) NOT NULL DEFAULT 'REGULAR'
+                         CHECK (customer_type IN ('REGULAR','CORPORATE','VIP')),
     person_id        UUID        NOT NULL REFERENCES person(id),
     user_id          UUID        NOT NULL REFERENCES users(id),
-    customer_type_id UUID        NOT NULL REFERENCES customer_type(id),
     created_at       TIMESTAMPTZ DEFAULT NOW(),
     updated_at       TIMESTAMPTZ,
     deleted_at       TIMESTAMPTZ,
@@ -464,7 +467,7 @@ CREATE TABLE customer ( -- Cliente
     status_id        UUID        REFERENCES status(id)
 );
 
-CREATE TABLE driver_license ( -- Licencia de conducción
+CREATE TABLE driver_license (
     id              UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     license_number  VARCHAR(50)  NOT NULL UNIQUE,
     license_type    VARCHAR(50),
@@ -487,7 +490,7 @@ CREATE TABLE driver_license ( -- Licencia de conducción
     status_id       UUID         REFERENCES status(id)
 );
 
-CREATE TABLE customer_favorite ( -- Vehículo favorito del cliente
+CREATE TABLE customer_favorite (
     customer_id UUID NOT NULL REFERENCES customer(id),
     vehicle_id  UUID NOT NULL REFERENCES vehicle(id),
     PRIMARY KEY (customer_id, vehicle_id),
@@ -499,7 +502,7 @@ CREATE TABLE customer_favorite ( -- Vehículo favorito del cliente
 -- MODULE 5: RESERVAS
 -- ==========================================
 
-CREATE TABLE coverage_plan ( -- Plan de cobertura
+CREATE TABLE coverage_plan (
     id          UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     name        VARCHAR(100)  NOT NULL UNIQUE,
     description TEXT,
@@ -513,7 +516,7 @@ CREATE TABLE coverage_plan ( -- Plan de cobertura
     status_id   UUID          REFERENCES status(id)
 );
 
-CREATE TABLE mileage_plan ( -- Plan de kilometraje
+CREATE TABLE mileage_plan (
     id            UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     name          VARCHAR(100)  NOT NULL UNIQUE,
     mileage_limit INT,
@@ -528,24 +531,16 @@ CREATE TABLE mileage_plan ( -- Plan de kilometraje
     status_id     UUID          REFERENCES status(id)
 );
 
-CREATE TABLE reservation_status ( -- Estado de la reserva
-    id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name       VARCHAR(50) NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ,
-    created_by UUID        REFERENCES users(id),
-    updated_by UUID        REFERENCES users(id),
-    deleted_by UUID        REFERENCES users(id),
-    status_id  UUID        REFERENCES status(id)
-);
+-- NOTA: reservation_status eliminada como tabla.
+-- El estado de la reserva se maneja con CHECK constraint (más simple, misma función).
 
-CREATE TABLE reservation ( -- Reserva
+CREATE TABLE reservation (
     id                    UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     reservation_code      VARCHAR(50)   NOT NULL UNIQUE,
     start_date            DATE          NOT NULL,
     end_date              DATE          NOT NULL,
     pickup_branch_id      UUID          NOT NULL REFERENCES branch(id),
+    return_branch_id      UUID          NOT NULL REFERENCES branch(id),   -- NUEVO: sucursal de devolución
     total_days            INT           NOT NULL,
     daily_rate            DECIMAL(10,2) NOT NULL,
     mileage_extra_cost    DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -553,11 +548,12 @@ CREATE TABLE reservation ( -- Reserva
     coverage_cost         DECIMAL(10,2) NOT NULL DEFAULT 0,
     total_amount          DECIMAL(10,2) NOT NULL,
     cancellation_policy   TEXT,
+    reservation_state     VARCHAR(20)   NOT NULL DEFAULT 'PENDING'
+                              CHECK (reservation_state IN ('PENDING','CONFIRMED','ACTIVE','COMPLETED','CANCELLED','NO_SHOW')),
     vehicle_id            UUID          NOT NULL REFERENCES vehicle(id),
     customer_id           UUID          NOT NULL REFERENCES customer(id),
     coverage_plan_id      UUID          REFERENCES coverage_plan(id),
     mileage_plan_id       UUID          REFERENCES mileage_plan(id),
-    reservation_status_id UUID          NOT NULL REFERENCES reservation_status(id),
     created_at            TIMESTAMPTZ   DEFAULT NOW(),
     updated_at            TIMESTAMPTZ,
     deleted_at            TIMESTAMPTZ,
@@ -567,7 +563,7 @@ CREATE TABLE reservation ( -- Reserva
     status_id             UUID          REFERENCES status(id)
 );
 
-CREATE TABLE reservation_additional_service ( -- Servicio adicional de la reserva
+CREATE TABLE reservation_additional_service (
     reservation_id        UUID          NOT NULL REFERENCES reservation(id),
     additional_service_id UUID          NOT NULL REFERENCES additional_service(id),
     PRIMARY KEY (reservation_id, additional_service_id),
@@ -580,7 +576,7 @@ CREATE TABLE reservation_additional_service ( -- Servicio adicional de la reserv
 -- MODULE 6: INSPECCIONES
 -- ==========================================
 
-CREATE TABLE vehicle_inspection ( -- Inspección del vehículo
+CREATE TABLE vehicle_inspection (
     id                 UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     inspection_type    VARCHAR(20)  NOT NULL CHECK (inspection_type IN ('PICKUP','RETURN')),
     body_condition     TEXT,
@@ -605,7 +601,7 @@ CREATE TABLE vehicle_inspection ( -- Inspección del vehículo
 -- MODULE 7: CONTRATOS
 -- ==========================================
 
-CREATE TABLE contract ( -- Contrato
+CREATE TABLE contract (
     id              UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     contract_number VARCHAR(50)  NOT NULL UNIQUE,
     content         TEXT,
@@ -615,7 +611,7 @@ CREATE TABLE contract ( -- Contrato
     signed_at       TIMESTAMPTZ,
     contract_state  VARCHAR(20)  NOT NULL DEFAULT 'PENDING'
                         CHECK (contract_state IN ('PENDING','SIGNED','CANCELLED')),
-    reservation_id  UUID         NOT NULL REFERENCES reservation(id),
+    reservation_id  UUID         NOT NULL UNIQUE REFERENCES reservation(id),  -- UNIQUE: una reserva = un contrato
     created_at      TIMESTAMPTZ  DEFAULT NOW(),
     updated_at      TIMESTAMPTZ,
     deleted_at      TIMESTAMPTZ,
@@ -629,7 +625,7 @@ CREATE TABLE contract ( -- Contrato
 -- MODULE 8: PAGOS
 -- ==========================================
 
-CREATE TABLE payment_method ( -- Método de pago
+CREATE TABLE payment_method (
     id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     name       VARCHAR(50) NOT NULL UNIQUE,
     provider   VARCHAR(50),
@@ -642,7 +638,7 @@ CREATE TABLE payment_method ( -- Método de pago
     status_id  UUID        REFERENCES status(id)
 );
 
-CREATE TABLE payment ( -- Pago
+CREATE TABLE payment (
     id                UUID          PRIMARY KEY DEFAULT uuid_generate_v4(),
     amount_paid       DECIMAL(10,2) NOT NULL,
     reference         VARCHAR(100),
@@ -663,9 +659,10 @@ CREATE TABLE payment ( -- Pago
 
 -- ==========================================
 -- MODULE 9: CALIFICACIONES Y SOPORTE
+-- complaint_type eliminada: el tipo se maneja con CHECK en complaint
 -- ==========================================
 
-CREATE TABLE rating ( -- Calificación
+CREATE TABLE rating (
     id             UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     vehicle_score  INT         NOT NULL CHECK (vehicle_score BETWEEN 1 AND 5),
     service_score  INT         NOT NULL CHECK (service_score BETWEEN 1 AND 5),
@@ -684,53 +681,28 @@ CREATE TABLE rating ( -- Calificación
     status_id      UUID        REFERENCES status(id)
 );
 
-CREATE TABLE complaint_type ( -- Tipo de queja
-    id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name       VARCHAR(50) NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ,
-    created_by UUID        REFERENCES users(id),
-    updated_by UUID        REFERENCES users(id),
-    deleted_by UUID        REFERENCES users(id),
-    status_id  UUID        REFERENCES status(id)
+CREATE TABLE complaint (
+    id               UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
+    complaint_type   VARCHAR(50) NOT NULL DEFAULT 'SERVICE'
+                         CHECK (complaint_type IN ('SERVICE','VEHICLE','BILLING','OTHER')),
+    description      TEXT        NOT NULL,
+    admin_response   TEXT,
+    auto_closed      BOOLEAN     NOT NULL DEFAULT FALSE,
+    closed_at        TIMESTAMPTZ,
+    complaint_state  VARCHAR(20) NOT NULL DEFAULT 'PENDING'
+                         CHECK (complaint_state IN ('PENDING','IN_REVIEW','RESOLVED','CLOSED')),
+    customer_id      UUID        NOT NULL REFERENCES customer(id),
+    responded_by     UUID        REFERENCES users(id),
+    created_at       TIMESTAMPTZ DEFAULT NOW(),
+    updated_at       TIMESTAMPTZ,
+    deleted_at       TIMESTAMPTZ,
+    created_by       UUID        REFERENCES users(id),
+    updated_by       UUID        REFERENCES users(id),
+    deleted_by       UUID        REFERENCES users(id),
+    status_id        UUID        REFERENCES status(id)
 );
 
-CREATE TABLE complaint ( -- Queja
-    id                UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
-    description       TEXT        NOT NULL,
-    admin_response    TEXT,
-    auto_closed       BOOLEAN     NOT NULL DEFAULT FALSE,
-    closed_at         TIMESTAMPTZ,
-    complaint_state   VARCHAR(20) NOT NULL DEFAULT 'PENDING'
-                          CHECK (complaint_state IN ('PENDING','IN_REVIEW','RESOLVED','CLOSED')),
-    customer_id       UUID        NOT NULL REFERENCES customer(id),
-    complaint_type_id UUID        NOT NULL REFERENCES complaint_type(id),
-    responded_by      UUID        REFERENCES users(id),
-    created_at        TIMESTAMPTZ DEFAULT NOW(),
-    updated_at        TIMESTAMPTZ,
-    deleted_at        TIMESTAMPTZ,
-    created_by        UUID        REFERENCES users(id),
-    updated_by        UUID        REFERENCES users(id),
-    deleted_by        UUID        REFERENCES users(id),
-    status_id         UUID        REFERENCES status(id)
-);
-
-CREATE TABLE complaint_file ( -- Archivo de queja
-    id           UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
-    file_url     VARCHAR(500) NOT NULL,
-    file_type    VARCHAR(50),
-    complaint_id UUID         NOT NULL REFERENCES complaint(id),
-    created_at   TIMESTAMPTZ  DEFAULT NOW(),
-    updated_at   TIMESTAMPTZ,
-    deleted_at   TIMESTAMPTZ,
-    created_by   UUID         REFERENCES users(id),
-    updated_by   UUID         REFERENCES users(id),
-    deleted_by   UUID         REFERENCES users(id),
-    status_id    UUID         REFERENCES status(id)
-);
-
-CREATE TABLE support_ticket ( -- Ticket de soporte
+CREATE TABLE support_ticket (
     id             UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     subject        VARCHAR(200) NOT NULL,
     message        TEXT         NOT NULL,
@@ -750,7 +722,7 @@ CREATE TABLE support_ticket ( -- Ticket de soporte
     status_id      UUID         REFERENCES status(id)
 );
 
-CREATE TABLE ticket_message ( -- Mensaje del ticket
+CREATE TABLE ticket_message (
     id         UUID        PRIMARY KEY DEFAULT uuid_generate_v4(),
     message    TEXT        NOT NULL,
     is_agent   BOOLEAN     NOT NULL DEFAULT FALSE,
@@ -769,7 +741,7 @@ CREATE TABLE ticket_message ( -- Mensaje del ticket
 -- MODULE 10: NOTIFICACIONES
 -- ==========================================
 
-CREATE TABLE notification_type ( -- Tipo de notificación
+CREATE TABLE notification_type (
     id         UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     name       VARCHAR(100) NOT NULL UNIQUE,
     template   TEXT,
@@ -782,7 +754,7 @@ CREATE TABLE notification_type ( -- Tipo de notificación
     status_id  UUID         REFERENCES status(id)
 );
 
-CREATE TABLE notification ( -- Notificación
+CREATE TABLE notification (
     id                   UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     channel              VARCHAR(20)  NOT NULL CHECK (channel IN ('EMAIL','PUSH','SMS')),
     subject              VARCHAR(200),
@@ -804,7 +776,7 @@ CREATE TABLE notification ( -- Notificación
 -- MODULE 11: AUDITORÍA
 -- ==========================================
 
-CREATE TABLE audit_log ( -- Registro de auditoría
+CREATE TABLE audit_log (
     id         UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     action     VARCHAR(100) NOT NULL,
     entity     VARCHAR(100) NOT NULL,
@@ -823,7 +795,7 @@ CREATE TABLE audit_log ( -- Registro de auditoría
 -- MODULE 12: MARCA Y PERSONALIZACIÓN
 -- ==========================================
 
-CREATE TABLE branding_config ( -- Configuración de marca
+CREATE TABLE branding_config (
     id              UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     primary_color   VARCHAR(10),
     secondary_color VARCHAR(10),
@@ -836,7 +808,7 @@ CREATE TABLE branding_config ( -- Configuración de marca
     status_id       UUID         REFERENCES status(id)
 );
 
-CREATE TABLE api_token ( -- Token de API
+CREATE TABLE api_token (
     id          UUID         PRIMARY KEY DEFAULT uuid_generate_v4(),
     token       VARCHAR(500) NOT NULL UNIQUE,
     description VARCHAR(200),
