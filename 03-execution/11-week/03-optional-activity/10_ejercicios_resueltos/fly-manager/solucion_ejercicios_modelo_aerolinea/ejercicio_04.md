@@ -1,4 +1,0 @@
-✅ RESUMEN EJERCICIO 04 — Millas y fidelización
-Req 1 — Consulta INNER JOIN (5 tablas): Conectó customer → loyalty_account → miles_transaction → loyalty_account_tier → loyalty_tier. Devolvió 4 registros reales mostrando cuentas de fidelización, millas acumuladas y nivel asignado.
-Req 2 — Trigger AFTER INSERT: Se creó trg_ej04_revisar_nivel_millas sobre miles_transaction. Cada vez que se registra una transacción de millas, calcula el total acumulado EARN y determina el nivel correspondiente (Bronze 0, Silver 10.000, Gold 50.000). ✅ Validado con el NOTICE [FIDELIZACIÓN].
-Req 3 — Procedimiento almacenado: Se creó sp_ej04_registrar_millas que recibe loyalty_account_id, tipo de transacción, cantidad de millas y código de referencia, insertando la transacción y activando el trigger automáticamente.

@@ -1,4 +1,0 @@
-✅ RESUMEN EJERCICIO 02 — Pagos y transacciones financieras
-Req 1 — Consulta INNER JOIN (7 tablas): Conectó sale → reservation → payment → payment_status → payment_method → payment_transaction → currency. Devolvió 5 registros reales con el flujo completo de ventas y pagos.
-Req 2 — Trigger AFTER UPDATE: trg_ej02_refund_automatico sobre payment. Cuando el estado cambia a Fallido, Cancelado o Reembolsado, genera automáticamente un registro en refund con referencia única y monto del pago original. ✅ Validado con REF-AUTO generado.
-Req 3 — Procedimiento almacenado: sp_ej02_registrar_transaccion registra transacciones financieras (AUTH, CAPTURE, VOID, REFUND, REVERSAL) sobre pagos existentes.

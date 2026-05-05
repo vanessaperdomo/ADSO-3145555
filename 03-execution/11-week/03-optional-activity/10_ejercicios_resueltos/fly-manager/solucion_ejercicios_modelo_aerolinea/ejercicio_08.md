@@ -1,4 +1,0 @@
-✅ RESUMEN EJERCICIO 08 — Roles y auditoría de acceso
-Req 1 — Consulta INNER JOIN (5 tablas): Conectó user_account → user_role → security_role → role_permission → security_permission. Muestra el mapa completo de permisos por usuario con roles y códigos de permiso.
-Req 2 — Trigger AFTER INSERT: Se creó trg_ej08_auditar_rol sobre user_role. Cada vez que se asigna un rol, registra en auditoría el usuario, el rol recibido y la fecha. ✅ Validado con [AUDITORÍA ACCESO] Usuario "patricia.vargas" recibió el rol "Control operacional".
-Req 3 — Procedimiento almacenado: Se creó sp_ej08_asignar_rol que verifica si el usuario ya tiene el rol, y si no lo tiene lo asigna activando el trigger de auditoría automáticamente.

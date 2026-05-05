@@ -5,8 +5,11 @@ $ErrorActionPreference = "Stop"
 # Flujo deterministico:
 # 1) down -v
 # 2) up -d
-# 3) cargar DDL + seeds manualmente (sin depender de initdb)
-# 4) validar conteos
+# 3) cargar DDL base manualmente (sin depender de initdb)
+# 4) aplicar migraciones versionadas obligatorias
+# 5) cargar seeds y validaciones de datos
+# 6) validar conteos y minimos operativos
+# 7) aplicar hardening y auditoria local de seguridad
 # ============================================================
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -15,19 +18,63 @@ Set-Location $ScriptDir
 $ProjectRoot = (Resolve-Path (Join-Path $ScriptDir "..\..")).Path
 
 $DdlPath           = Join-Path $ProjectRoot "db\ddl\modelo_postgresql.sql"
+$MigrationApplyPath = Join-Path $ProjectRoot "infra\tools\aplicar_migraciones.ps1"
 $SeedCanonicoPath  = Join-Path $ProjectRoot "db\seeds\00_seed_canonico.sql"
 $SeedVolPath       = Join-Path $ProjectRoot "db\seeds\01_seed_volumetrico.sql"
 $SeedValidPath     = Join-Path $ProjectRoot "db\seeds\99_validaciones_post_seed.sql"
+$SecretsValidationPath = Join-Path $ProjectRoot "infra\tools\validar_secretos_locales.ps1"
+$SecurityHardeningPath = Join-Path $ProjectRoot "infra\tools\endurecer_seguridad_postgres_local.ps1"
+$BootstrapAdminConfinementPath = Join-Path $ProjectRoot "infra\tools\confinar_admin_bootstrap_local.ps1"
+$OperationalLoginsProvisionPath = Join-Path $ProjectRoot "infra\tools\provisionar_logins_operativos_locales.ps1"
+$DelegatedUsersProvisionPath = Join-Path $ProjectRoot "infra\tools\provisionar_usuarios_delegados_locales.ps1"
+$DelegatedUsersCsvPath = Join-Path $ProjectRoot "infra\runtime\security\delegated_users_local.csv"
+$OperationalLoginsValidationPath = Join-Path $ProjectRoot "infra\tools\validar_logins_operativos_locales.ps1"
+$OperationalLoginsEvidencePath   = Join-Path $ProjectRoot "docs\validacion\EVIDENCIA_LOGINS_OPERATIVOS_LOCALES_2026-03-20.md"
+$LeastPrivilegeValidationPath    = Join-Path $ProjectRoot "infra\tools\validar_menor_privilegio_operativo_local.ps1"
+$LeastPrivilegeEvidencePath      = Join-Path $ProjectRoot "docs\validacion\EVIDENCIA_MENOR_PRIVILEGIO_OPERATIVO_LOCAL_2026-03-20.md"
+$BootstrapAdminValidationPath    = Join-Path $ProjectRoot "infra\tools\validar_admin_bootstrap_local.ps1"
+$BootstrapAdminEvidencePath      = Join-Path $ProjectRoot "docs\validacion\EVIDENCIA_ADMIN_BOOTSTRAP_LOCAL_2026-03-20.md"
+$SecurityAuditPath     = Join-Path $ProjectRoot "infra\tools\auditar_seguridad_postgres_local.ps1"
+$SecurityAuditEvidencePath = Join-Path $ProjectRoot "docs\validacion\EVIDENCIA_AUDITORIA_SEGURIDAD_LOCAL_2026-03-20.md"
+$EnvPath = Join-Path $ProjectRoot "infra\docker\.env"
 
 $ContainerName = "fly-bd-pg-5435"
 $DbUser = if ([string]::IsNullOrWhiteSpace($env:POSTGRES_USER)) { "fly_admin" } else { $env:POSTGRES_USER }
 $DbName = if ([string]::IsNullOrWhiteSpace($env:POSTGRES_DB))   { "flydb" }     else { $env:POSTGRES_DB }
+$HostBindIp = "127.0.0.1"
+$HostPort = "5435"
+$RuntimeLogin = "fly_local_rw"
+$ReadOnlyLogin = "fly_local_ro"
+$AuditLogin = "fly_local_audit"
 
 function Assert-RequiredFile {
     param([string]$Path)
     if (-not (Test-Path -LiteralPath $Path)) {
         throw "Archivo requerido no encontrado: $Path"
     }
+}
+
+function Get-EnvMap {
+    param([string]$Path)
+
+    $map = [ordered]@{}
+    foreach ($line in Get-Content -Path $Path) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith("#")) {
+            continue
+        }
+
+        $separator = $trimmed.IndexOf("=")
+        if ($separator -lt 1) {
+            throw "Formato invalido en archivo .env: $Path"
+        }
+
+        $key = $trimmed.Substring(0, $separator).Trim()
+        $value = $trimmed.Substring($separator + 1)
+        $map[$key] = $value
+    }
+
+    return $map
 }
 
 function Invoke-PsqlFile {
@@ -77,6 +124,20 @@ function Assert-PositiveCount {
     Write-Host ("      OK {0}: {1}" -f $Label, $value)
 }
 
+function Assert-RelationExists {
+    param(
+        [string]$Label,
+        [string]$Relation
+    )
+
+    $safeRelation = $Relation.Replace("'", "''")
+    $exists = Invoke-PsqlScalar -Sql "SELECT to_regclass('$safeRelation') IS NOT NULL;"
+    if ($exists -ne "t") {
+        throw "Validacion fallida: $Label no disponible ($Relation)"
+    }
+    Write-Host ("      OK {0}: presente" -f $Label)
+}
+
 function Assert-MinCount {
     param(
         [string]$Label,
@@ -113,9 +174,43 @@ function Show-Diagnostics {
 
 try {
     Assert-RequiredFile -Path $DdlPath
+    Assert-RequiredFile -Path $MigrationApplyPath
     Assert-RequiredFile -Path $SeedCanonicoPath
     Assert-RequiredFile -Path $SeedVolPath
     Assert-RequiredFile -Path $SeedValidPath
+    Assert-RequiredFile -Path $SecretsValidationPath
+    Assert-RequiredFile -Path $SecurityHardeningPath
+    Assert-RequiredFile -Path $BootstrapAdminConfinementPath
+    Assert-RequiredFile -Path $OperationalLoginsProvisionPath
+    Assert-RequiredFile -Path $DelegatedUsersProvisionPath
+    Assert-RequiredFile -Path $OperationalLoginsValidationPath
+    Assert-RequiredFile -Path $LeastPrivilegeValidationPath
+    Assert-RequiredFile -Path $BootstrapAdminValidationPath
+    Assert-RequiredFile -Path $SecurityAuditPath
+
+    Write-Host ""
+    Write-Host "[1/9] Validando secretos locales..."
+    & $SecretsValidationPath | Out-Null
+    if (-not $?) {
+        throw "La validacion de secretos locales fallo. Ejecuta .\infra\tools\inicializar_secretos_locales.ps1"
+    }
+
+    $envMap = Get-EnvMap -Path $EnvPath
+    if ($envMap.Contains("POSTGRES_BIND_IP") -and (-not [string]::IsNullOrWhiteSpace([string]$envMap["POSTGRES_BIND_IP"]))) {
+        $HostBindIp = [string]$envMap["POSTGRES_BIND_IP"]
+    }
+    if ($envMap.Contains("POSTGRES_PORT") -and (-not [string]::IsNullOrWhiteSpace([string]$envMap["POSTGRES_PORT"]))) {
+        $HostPort = [string]$envMap["POSTGRES_PORT"]
+    }
+    if ($envMap.Contains("FLY_APP_RW_USER") -and (-not [string]::IsNullOrWhiteSpace([string]$envMap["FLY_APP_RW_USER"]))) {
+        $RuntimeLogin = [string]$envMap["FLY_APP_RW_USER"]
+    }
+    if ($envMap.Contains("FLY_APP_RO_USER") -and (-not [string]::IsNullOrWhiteSpace([string]$envMap["FLY_APP_RO_USER"]))) {
+        $ReadOnlyLogin = [string]$envMap["FLY_APP_RO_USER"]
+    }
+    if ($envMap.Contains("FLY_APP_AUDIT_USER") -and (-not [string]::IsNullOrWhiteSpace([string]$envMap["FLY_APP_AUDIT_USER"]))) {
+        $AuditLogin = [string]$envMap["FLY_APP_AUDIT_USER"]
+    }
 
     docker compose config -q
     if ($LASTEXITCODE -ne 0) {
@@ -128,7 +223,7 @@ try {
     Write-Host "======================================================"
     Write-Host ""
 
-    Write-Host "[1/6] Deteniendo y eliminando contenedor y volumen..."
+    Write-Host "[2/9] Deteniendo y eliminando contenedor y volumen..."
     docker compose down -v --remove-orphans
     if ($LASTEXITCODE -ne 0) {
         throw "docker compose down -v fallo."
@@ -136,7 +231,7 @@ try {
     Write-Host "      Contenedor y volumen eliminados."
 
     Write-Host ""
-    Write-Host "[2/6] Levantando contenedor PostgreSQL 16..."
+    Write-Host "[3/9] Levantando contenedor PostgreSQL 16..."
     docker compose up -d
     if ($LASTEXITCODE -ne 0) {
         throw "docker compose up -d fallo."
@@ -162,15 +257,34 @@ try {
     }
 
     Write-Host ""
-    Write-Host "[3/6] Cargando DDL + seeds de forma deterministica..."
+    Write-Host "[4/9] Cargando DDL base congelado..."
     Invoke-PsqlFile -LocalPath $DdlPath          -RemotePath "/tmp/01_modelo_postgresql.sql"        -Label "DDL maestro"
+    Write-Host "      DDL base cargado."
+
+    Write-Host ""
+    Write-Host "[5/9] Aplicando migraciones versionadas sobre baseline..."
+    & $MigrationApplyPath `
+        -ContainerName $ContainerName `
+        -DbUser $DbUser `
+        -DbName $DbName | Out-Null
+    if (-not $?) {
+        throw "Fallo la aplicacion de migraciones versionadas."
+    }
+    Assert-RelationExists -Label "schema_migration_journal" -Relation "public.schema_migration_journal"
+    Assert-RelationExists -Label "schema_migration_lock"    -Relation "public.schema_migration_lock"
+    Assert-MinCount -Label "schema_migration_journal_rows" -Sql "SELECT count(*) FROM public.schema_migration_journal;" -MinExpected 1
+    Write-Host "      Baseline limpio alineado con journal de migraciones."
+
+    Write-Host ""
+    Write-Host "[6/9] Cargando seeds y validaciones post-seed..."
     Invoke-PsqlFile -LocalPath $SeedCanonicoPath -RemotePath "/tmp/02_seed_canonico.sql"            -Label "Seed canonico"
     Invoke-PsqlFile -LocalPath $SeedVolPath      -RemotePath "/tmp/03_seed_volumetrico.sql"         -Label "Seed volumetrico"
     Invoke-PsqlFile -LocalPath $SeedValidPath    -RemotePath "/tmp/04_validaciones_post_seed.sql"   -Label "Validaciones post-seed"
     Write-Host "      Carga completada."
 
     Write-Host ""
-    Write-Host "[4/6] Verificando integridad del seed canonico..."
+    Write-Host "[7/9] Verificando integridad de datos post-seed..."
+    Write-Host "      -> Seed canonico"
     $queryCanon = @"
 SELECT
   (SELECT count(*) FROM public.country)              AS paises,
@@ -196,7 +310,7 @@ SELECT
     }
 
     Write-Host ""
-    Write-Host "[5/6] Verificando seed volumetrico..."
+    Write-Host "      -> Seed volumetrico"
     $queryVol = @"
 SELECT
   (SELECT count(*) FROM public.flight  WHERE flight_number IN ('FY120','FY220','FY712'))
@@ -253,7 +367,7 @@ SELECT
     }
 
     Write-Host ""
-    Write-Host "      Validando minimos obligatorios..."
+    Write-Host "      -> Minimos obligatorios"
     Assert-PositiveCount -Label "country"        -Sql "SELECT count(*) FROM public.country;"
     Assert-PositiveCount -Label "airline"        -Sql "SELECT count(*) FROM public.airline;"
     Assert-PositiveCount -Label "airport"        -Sql "SELECT count(*) FROM public.airport;"
@@ -283,13 +397,100 @@ SELECT
     Assert-MinCount -Label "refunds_vol2"         -Sql "SELECT count(*) FROM public.refund WHERE refund_reference LIKE 'RFD-VOL2-%';" -MinExpected 100
 
     Write-Host ""
-    Write-Host "[6/6] Estado del contenedor:"
+    Write-Host "[8/9] Aplicando baseline local de seguridad..."
+    & $SecurityHardeningPath -ContainerName $ContainerName -DbUser $DbUser -DbName $DbName
+    if (-not $?) {
+        throw "Fallo al aplicar hardening de seguridad local."
+    }
+
+    & $OperationalLoginsProvisionPath `
+        -ContainerName $ContainerName `
+        -DbAdminUser $DbUser `
+        -DbName $DbName
+    if (-not $?) {
+        throw "Fallo al provisionar logins operativos locales."
+    }
+
+    if (Test-Path -LiteralPath $DelegatedUsersCsvPath) {
+        & $DelegatedUsersProvisionPath `
+            -ContainerName $ContainerName `
+            -DbAdminUser $DbUser `
+            -DbName $DbName `
+            -UsersCsvPath $DelegatedUsersCsvPath | Out-Null
+        if (-not $?) {
+            throw "Fallo al provisionar usuarios delegados locales."
+        }
+        Write-Host ("      Usuarios delegados cargados desde: {0}" -f $DelegatedUsersCsvPath)
+    }
+    else {
+        Write-Host ("      No se detecto archivo de usuarios delegados: {0}" -f $DelegatedUsersCsvPath)
+    }
+
+    & $BootstrapAdminConfinementPath `
+        -ContainerName $ContainerName `
+        -DbUser $DbUser `
+        -DbName $DbName
+    if (-not $?) {
+        throw "Fallo al confinar admin bootstrap local."
+    }
+
+    & $OperationalLoginsValidationPath `
+        -ContainerName $ContainerName `
+        -DbAdminUser $DbUser `
+        -DbName $DbName `
+        -EvidencePath $OperationalLoginsEvidencePath | Out-Null
+    if (-not $?) {
+        throw "Fallo la validacion de logins operativos locales."
+    }
+
+    & $LeastPrivilegeValidationPath `
+        -ContainerName $ContainerName `
+        -DbName $DbName `
+        -EvidencePath $LeastPrivilegeEvidencePath | Out-Null
+    if (-not $?) {
+        throw "Fallo la validacion de menor privilegio operativo local."
+    }
+
+    & $BootstrapAdminValidationPath `
+        -ContainerName $ContainerName `
+        -DbAdminUser $DbUser `
+        -DbName $DbName `
+        -EvidencePath $BootstrapAdminEvidencePath | Out-Null
+    if (-not $?) {
+        throw "Fallo la validacion del admin bootstrap local."
+    }
+
+    & $SecurityAuditPath `
+        -ContainerName $ContainerName `
+        -DbUser $DbUser `
+        -DbName $DbName `
+        -EvidencePath $SecurityAuditEvidencePath | Out-Null
+    if (-not $?) {
+        throw "Fallo la auditoria de seguridad local."
+    }
+
+    Write-Host "      Baseline de seguridad, logins operativos, admin bootstrap confinado, menor privilegio y auditoria aplicados."
+
+    Write-Host ""
+    Write-Host "[9/9] Estado del contenedor:"
     docker ps --filter "name=$ContainerName" --format "table {{.Names}}`t{{.Status}}`t{{.Ports}}"
 
     Write-Host ""
     Write-Host "======================================================"
-    Write-Host "  Instalacion completada con datos verificados."
-    Write-Host "  Conexion: psql -h localhost -p 5435 -U $DbUser -d $DbName"
+    Write-Host "  Instalacion completada con baseline DDL+migraciones, datos, seguridad y logins operativos verificados."
+    Write-Host "  Conexion admin break-glass: docker exec -it $ContainerName psql -U $DbUser -d $DbName"
+    Write-Host "  Password admin: usa POSTGRES_PASSWORD desde infra/docker/.env o variable local."
+    Write-Host "  Nota: el admin bootstrap queda bloqueado por TCP y solo disponible por socket interno."
+    Write-Host "  Si ves 'pg_hba.conf rejects connection ... user `"$DbUser`"' desde el host, el rechazo es esperado."
+    Write-Host "  Conexion host RO: psql -h $HostBindIp -p $HostPort -U $ReadOnlyLogin -d $DbName"
+    Write-Host "  Conexion host RW: psql -h $HostBindIp -p $HostPort -U $RuntimeLogin -d $DbName"
+    Write-Host "  Conexion host AUDIT: psql -h $HostBindIp -p $HostPort -U $AuditLogin -d $DbName"
+    Write-Host "  Passwords operativos: usa FLY_APP_RO_PASSWORD / FLY_APP_RW_PASSWORD / FLY_APP_AUDIT_PASSWORD desde infra/docker/.env."
+    Write-Host "  Archivo local usuarios delegados: $DelegatedUsersCsvPath"
+    Write-Host "  Evidencia admin bootstrap: $BootstrapAdminEvidencePath"
+    Write-Host "  Evidencia menor privilegio: $LeastPrivilegeEvidencePath"
+    Write-Host "  Evidencia seguridad: $SecurityAuditEvidencePath"
+    Write-Host "  Evidencia logins operativos: $OperationalLoginsEvidencePath"
     Write-Host "======================================================"
 }
 catch {

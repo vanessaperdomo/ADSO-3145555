@@ -1,4 +1,0 @@
-✅ RESUMEN EJERCICIO 07 — Asientos y equipaje
-Req 1 — Consulta INNER JOIN (7 tablas): Conectó ticket_segment → ticket → reservation_passenger → person → seat_assignment → aircraft_seat → baggage. Devolvió 4 registros con pasajeros (Ana Garcia, Carlos Mendoza, Laura Torres), asientos asignados (2A, 1A, 12A, 15A) y sus equipajes.
-Req 2 — Trigger AFTER INSERT: Se creó trg_ej07_equipaje_registrado sobre baggage. Registra cada equipaje con su tag, tipo, peso y estado. Si el peso supera 23 kg genera una alerta adicional. ✅ Validado con [ALERTA PESO] BAG-VP-EJ07-002 (26 kg).
-Req 3 — Procedimiento almacenado: Se creó sp_ej07_registrar_equipaje que recibe ticket_segment_id, tag, tipo, estado y peso, registrando el equipaje y activando el trigger automáticamente.

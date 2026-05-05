@@ -1,4 +1,0 @@
-✅ RESUMEN EJERCICIO 09 — Tarifas comerciales
-Req 1 — Consulta INNER JOIN (7 tablas): Conectó fare → fare_class → airport (origen) → airport (destino) → ticket → sale → reservation. Devolvió 3 registros reales con tarifas BOG-MAD, BOG-MDE y BOG-MIA con sus clases y montos.
-Req 2 — Trigger AFTER INSERT: Se creó trg_ej09_publicar_tarifa sobre fare. Cada vez que se publica una tarifa, registra la ruta origen-destino, clase, monto y vigencia. ✅ Validado con [TARIFA PUBLICADA] Ruta: BOG → MDE.
-Req 3 — Procedimiento almacenado: Se creó sp_ej09_publicar_tarifa que recibe todos los parámetros de la tarifa y la publica activando el trigger automáticamente.

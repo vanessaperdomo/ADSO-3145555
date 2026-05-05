@@ -1,4 +1,0 @@
-✅ RESUMEN EJERCICIO 03 — Facturación: venta, impuestos y detalle facturable
-Req 1 — Consulta INNER JOIN (6 tablas): Conectó invoice → invoice_status → sale → invoice_line → tax → currency. Devolvió 6 registros reales mostrando el flujo completo de facturación con impuestos y moneda por cada línea.
-Req 2 — Trigger AFTER INSERT: Se creó trg_ej03_log_linea_factura sobre invoice_line. Cada vez que se inserta una línea facturable, el trigger genera automáticamente un aviso de trazabilidad con número de factura, descripción, cantidad y precio. ✅ Validado con el NOTICE [FACTURACIÓN] Línea 4 registrada en...
-Req 3 — Procedimiento almacenado: Se creó sp_ej03_registrar_linea_factura que recibe invoice_id, número de línea, descripción, cantidad, precio unitario y tax_id, inserta la línea y activa el trigger automáticamente.
