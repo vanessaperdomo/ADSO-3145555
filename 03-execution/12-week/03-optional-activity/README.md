@@ -1,2 +1,10 @@
-link repositorio de trabajo: https://github.com/Hotel-system-group-6/Hotel-System-Final
-link trello: https://trello.com/invite/b/69fa077e34942289367cd69e/ATTI11c459395a5587aa8845fdfff0c3f11228A928CC/hoteleria
+Repositorio Grupo 6: https://github.com/Hotel-system-group-6/Hotel-System-Final.git
+
+Repositorio de Documentación Grupo 6: https://github.com/Hotel-system-group-6/docs_Hotel-system-group.git
+
+Integrantes:
+
+Maria Jose Oyolá
+Kevin Andrey Culma Gómez
+Laura Vanesa Perdomo
+Daniel Vargas
