@@ -7,7 +7,8 @@ Integrantes:
 - Emily Sharith Amezquita Saavedra
 - Laura Vanessa Perez Perdomo
 
-Link drawio: https://drive.google.com/file/d/1GyKt1rkFD2v7nNXwDqow3bjp65A6i2xh/view?usp=sharing
+Link drawio diagrama modulo 5: https://drive.google.com/file/d/1GyKt1rkFD2v7nNXwDqow3bjp65A6i2xh/view?usp=sharing
+link del diagrama de todos los modulos: https://drive.google.com/file/d/1qv7NKeOTKBHTuOzFZXSDfWaC07WkjMod/view?usp=sharing
 
 Entregable final script justificacion:
 
