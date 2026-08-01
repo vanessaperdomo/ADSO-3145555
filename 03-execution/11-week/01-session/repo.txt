@@ -1,1 +1,22 @@
-https://github.com/code-dev-projects/fly-manager.git
+Estoy trabajando en el proyecto "ferreteria-control-financiero" (monorepo: backend Go + MySQL + frontend Angular, todo con Docker). Ya tienes el plan de trabajo completo en un documento adjunto (PRJ-FERRETERIA-V13) — lo voy a subir de nuevo. Uso git bash en Windows, todo por comandos.
+
+ESTRATEGIA DE RAMAS (aplica a TODAS las HU):
+- 3 ramas padre: main, qa, dev.
+- Por cada HU: se crea HU-XXX-nombre-dev desde dev actualizado, se desarrolla ahí con 2 commits (según el plan), se pushea.
+- Promoción a qa: nueva rama HU-XXX-nombre-qa desde qa actualizado + cherry-pick -x de los commits de dev.
+- Promoción a main: nueva rama HU-XXX-nombre-main desde main actualizado + cherry-pick -x de los commits de qa (los hashes cambian en cada cherry-pick, siempre uso los más recientes).
+- Siempre me pasas los comandos completos, yo los corro y te pego la salida.
+- Antes de comitear, siempre reviso git status; si aparece angular.json modificado (por el prompt de analytics de Angular CLI), lo descarto con git checkout -- angular.json antes de comitear.
+- Antes de comitear un formulario/feature, lo pruebo en el navegador (con npm start corriendo en otra terminal + docker compose up mysql/backend) y te mando screenshot para confirmar que funciona.
+
+ESTADO ACTUAL DEL BACKLOG (todo verificado funcionando en vivo):
+✅ HU-000, HU-001, HU-002, HU-005 (categorías), HU-003 (ingreso), HU-004 (egreso), HU-006 (listado+detalle con filtros persistidos en query params), HU-009 (resumen por periodo), HU-007 (editar movimiento) — todas en main, dev y qa.
+
+SIGUIENTE: HU-008 — Anular movimiento. Backend ya existe (DELETE /api/movements/{id}, soft delete + auditoría, devuelve 204). Frontend: botón "Anular" con confirmación en el listado; el movimiento anulado se marca visualmente pero no desaparece de la tabla (ya tenemos la columna "Estado" que muestra Activo/Anulado y la fila se tacha con opacidad si cancelled=true).
+
+Dato importante: no existe GET /api/movements/{id}, así que el patrón para detalle/editar es pasar el movimiento por router state al navegar, con fallback a un GET /api/movements con rango amplio (2000-01-01 a 2100-12-31) si se entra directo por URL.
+
+Empecemos con: 
+git checkout dev
+git pull origin dev
+git checkout -b HU-008-anular-movimiento-dev
