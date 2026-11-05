@@ -1,1 +1,11 @@
 # sha256  file / archivo
+a84d2fe765aa621fa21563d301a14adc7bf8c9790c09bf30ee4e0e0997c8f520  Back-end-final-delivery-2026-main.zip
+094bffd114499c4138b859c806e8afac50b9de3058addd5919e5a238d52f5e77  Back-end-full-export.zip
+7b9895d7efe1e0216472b41164574029b6c94b3a2d7f66bf69d631fc04664ae8  Documentation-final-delivery-2026-main.zip
+807c0ede7ec3d49f85c9e8061bf2bfcfc05b4c8964deac6a054ecc6962d471e8  Documentation-full-export.zip
+5df953ddfe4b156262e21bcb2406d897fa29964d8fd8dba2d6d5b40b2ed8dd6f  database-final-delivery-2026-main.zip
+71caa5a17a0733a82bac9f06c4553467c53f0dfd64db9fac2e4411177efe6c66  database-full-export.zip
+e4058ae1488baefe4b691494070535285235e63c5158e38abcb5d449a4d2c803  front-end_movil-final-delivery-2026-main.zip
+3259e064b77455496522aa456569748215f547dd216581c85b43a458f0cef7b4  front-end_movil-full-export.zip
+043d3468065e493ac5af6802398cc62ab95a900edf3c5706d5f2aa0f89352bd9  front-end_web-final-delivery-2026-main.zip
+56d14818fe8b8078287b802de55a91bf4e814692a35cb4e062091a189e3eb290  front-end_web-full-export.zip

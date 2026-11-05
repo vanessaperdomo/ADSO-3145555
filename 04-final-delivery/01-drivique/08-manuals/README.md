@@ -1,12 +1,20 @@
-# Manuals / Manuales
+# Manuals / Manuales — Drivique (ADSO-3145555)
 
 **Training project deliverable / Producto del proyecto formativo:** Manuales técnico, instalación y usuario final.
 
 ## Required content / Contenido requerido
 
-- [ ] Technical manual / Manual técnico
-- [ ] Installation manual / Manual de instalación
-- [ ] End-user manual / Manual de usuario final
+- [x] Technical manual / Manual técnico (`technical-manual.pdf`)
+- [x] Installation manual / Manual de instalación (`installation-manual.pdf`)
+- [x] End-user manual / Manual de usuario final (`user-manual.pdf`)
+
+## Official Deliverables / Archivos Oficiales Entregados
+
+| File / Archivo | Format / Formato | Pages / Páginas | Content / Contenido |
+|---|---|---|---|
+| [`technical-manual.pdf`](technical-manual.pdf) | PDF | 22 págs. | Manual Técnico de la Plataforma (arquitectura, repositorios, seguridad JWT/2FA/AES-256-GCM, base de datos PostgreSQL 17 y API REST). |
+| [`installation-manual.pdf`](installation-manual.pdf) | PDF | 15 págs. | Manual de Instalación y Configuración paso a paso (Backend Spring Boot, Base de Datos Liquibase, Web React 19, App Móvil Android APK y Docker). |
+| [`user-manual.pdf`](user-manual.pdf) | PDF | 24 págs. | Manual de Usuario Final ilustrado con capturas reales (Cliente Web/Móvil, Panel de Sucursal `/encargado` y Panel General `/admin`). |
 
 ## Format / Formato
 

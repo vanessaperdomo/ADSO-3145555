@@ -1,12 +1,18 @@
-# Improvement actions / Acciones de mejoramiento
+# Improvement actions / Acciones de mejoramiento — Drivique (ADSO-3145555)
 
 **Training project deliverable / Producto del proyecto formativo:** Documentación de acciones correctivas, preventivas y de mejoramiento del software.
 
 ## Required content / Contenido requerido
 
-- [ ] Corrective actions / Acciones correctivas
-- [ ] Preventive actions / Acciones preventivas
-- [ ] Software improvement actions / Acciones de mejoramiento del software
+- [x] Corrective actions / Acciones correctivas
+- [x] Preventive actions / Acciones preventivas
+- [x] Software improvement actions / Acciones de mejoramiento del software
+
+## Official Deliverable / Archivo Oficial Entregado
+
+| File / Archivo | Format / Formato | Content / Contenido |
+|---|---|---|
+| [`improvement-actions.pdf`](improvement-actions.pdf) | PDF | Informe de Acciones Correctivas, Preventivas y de Mejoramiento continuo del sistema Drivique. |
 
 ## Format / Formato
 

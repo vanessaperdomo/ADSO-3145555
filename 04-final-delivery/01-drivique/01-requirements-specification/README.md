@@ -1,12 +1,18 @@
-# Requirements specification / Especificación de requisitos
+# Requirements specification / Especificación de requisitos — Drivique (ADSO-3145555)
 
-**Training project deliverable / Producto del proyecto formativo:** Informe de especificación de requisitos.
+**Training project deliverable / Producto del proyecto formativo:** Informe de especificación de requisitos bajo el estándar IEEE 830.
 
 ## Required content / Contenido requerido
 
-- [ ] Requirements specification report / Informe de especificación de requisitos
-- [ ] Functional and non-functional requirements / Requisitos funcionales y no funcionales
-- [ ] User stories and prioritized backlog, if used / Historias de usuario y backlog priorizado, si se usaron
+- [x] Requirements specification report / Informe de especificación de requisitos (`requirements-specification.pdf`)
+- [x] Functional and non-functional requirements / Requisitos funcionales (60 RF: RF1 a RF60) y no funcionales (12 RNF: RNF1 a RNF12)
+- [x] Use cases and traceability / 10 casos de uso extendidos, restricciones, supuestos y trazabilidad
+
+## Official Deliverable / Archivo Oficial Entregado
+
+| File / Archivo | Format / Formato | Content / Contenido |
+|---|---|---|
+| [`requirements-specification.pdf`](requirements-specification.pdf) | PDF | Documento consolidado IEEE 830 con portada institucional centrada, tabla de contenido, descripción general, 60 Requerimientos Funcionales (Cliente, Panel General `/admin` y Panel de Sucursal `/encargado`), 12 Requerimientos No Funcionales y 10 Casos de Uso. |
 
 ## Format / Formato
 

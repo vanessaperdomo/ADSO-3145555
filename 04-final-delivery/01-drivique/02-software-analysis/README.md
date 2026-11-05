@@ -1,11 +1,22 @@
-# Software analysis / Análisis del software
+# Software analysis / Análisis del software — Drivique (ADSO-3145555)
 
-**Training project deliverable / Producto del proyecto formativo:** Documentación de análisis del software (vistas dinámicas del software).
+**Training project deliverable / Producto del proyecto formativo:** Documentación de análisis del software (vistas dinámicas y estructurales del software).
 
 ## Required content / Contenido requerido
 
-- [ ] Software analysis document / Documento de análisis del software
-- [ ] Dynamic views: use cases, sequence, activity or state diagrams / Vistas dinámicas: casos de uso, secuencia, actividades o estados
+- [x] Software analysis document / Documento de análisis del software (`software-analysis.pdf`)
+- [x] Dynamic and structural views: use cases, sequence, domain and class diagrams / Vistas dinámicas y estructurales: casos de uso, secuencia, dominio y clases
+
+## Official Deliverables / Archivos Oficiales Entregados
+
+| File / Archivo | Format / Formato | Content / Contenido |
+|---|---|---|
+| [`software-analysis.pdf`](software-analysis.pdf) | PDF | Informe de Análisis del Software y Vistas Dinámicas V2 (procesos, interacción entre componentes y condiciones de continuidad). |
+| [`use-case-diagrams.pdf`](use-case-diagrams.pdf) | PDF | Diagramas de Casos de Uso por módulo y actor (`USER`, `BRANCH_MANAGER`, `SUPER_ADMIN`). |
+| [`sequence-diagrams.pdf`](sequence-diagrams.pdf) | PDF | Diagramas de Secuencia de los flujos transaccionales principales. |
+| [`class-diagram.pdf`](class-diagram.pdf) | PDF | Diagrama de Clases del sistema. |
+| [`domain-diagram.pdf`](domain-diagram.pdf) | PDF | Modelo de Dominio conceptual del negocio Drivique. |
+| [`use-cases.drawio`](use-cases.drawio) | Draw.io | Archivo fuente editable de los diagramas de casos de uso. |
 
 ## Format / Formato
 

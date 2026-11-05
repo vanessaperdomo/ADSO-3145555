@@ -1,10 +1,16 @@
-# Project article / Artículo del proyecto
+# Project article / Artículo del proyecto — Drivique (ADSO-3145555)
 
-**Training project deliverable / Producto del proyecto formativo:** Artículo del proyecto.
+**Training project deliverable / Producto del proyecto formativo:** Artículo científico y técnico del proyecto en formato IEEE a doble columna.
 
 ## Required content / Contenido requerido
 
-- [ ] Final article of the project / Artículo final del proyecto
+- [x] Final article of the project / Artículo final del proyecto (`project-article.pdf`)
+
+## Official Deliverable / Archivo Oficial Entregado
+
+| File / Archivo | Format / Formato | Content / Contenido |
+|---|---|---|
+| [`project-article.pdf`](project-article.pdf) | PDF (IEEE 2 Columnas) | *Drivique: diseño y especificación de una plataforma web progresiva y aplicación móvil para optimizar la gestión del alquiler de vehículos en Colombia* — Autoras: Laura Vanessa Pérez Perdomo, Danna Valentina Barrios Penagos y Emily Sharith Amézquita Saavedra (actualizado únicamente con el conteo de 60 Requerimientos Funcionales `RF1–RF60`). |
 
 ## Format / Formato
 

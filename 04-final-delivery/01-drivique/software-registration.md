@@ -17,10 +17,10 @@ Llene todos los campos vacíos. Sigue el Decreto 1360 de 1989.
 
 | Field / Campo | Value / Valor |
 |---|---|
-| Full name / Nombre |  |
-| ID document / Identificación | |
-| Acts on own behalf or as representative / Actúa en nombre propio o como representante | ☐ Own behalf / Nombre propio ☐ Representative / Representante |
-| Proof of representation / Prueba de representación, si aplica | |
+| Full name / Nombre | LAURA VANESSA PEREZ PERDOMO |
+| ID document / Identificación | CC 1075228306 |
+| Acts on own behalf or as representative / Actúa en nombre propio o como representante | ☑ Representative / Representante del equipo |
+| Proof of representation / Prueba de representación, si aplica | Representante designada por el equipo de aprendices ADSO Ficha 3145555 |
 
 ## 2. Authors / Autores (art. 5, num. 2)
 
@@ -38,9 +38,9 @@ Authors are the instructors and the apprentices listed in `team-roster.md`. Each
 | EDDIER YAIR LIBERATO CUENCA | | Kept privately / En custodia | | Instructor: see `team-roster.md` / ver `team-roster.md` |
 | JHON WILLIAN CORREDOR ARAUJO | | Kept privately / En custodia | | Instructor: see `team-roster.md` / ver `team-roster.md` |
 | ANDRES MORENO COLLAZOS | | Kept privately / En custodia | | Instructor: see `team-roster.md` / ver `team-roster.md` |
-| DANNA VALENTINA BARRIOS PENAGOS | CC | 1084923587 | 3145555 | |
-| LAURA VANESSA PEREZ PERDOMO | CC | 1075228306 | 3145555 | |
-| EMILY SHARITH AMEZQUITA SAAVEDRA | CC | 1075243904 | 3145555 | |
+| DANNA VALENTINA BARRIOS PENAGOS | CC | 1084923587 | 3145555 | Desarrollo Full-Stack en los 5 repositorios (`Back-end` Spring Boot, `front-end_web` React, `front-end_movil` Expo, `database` PostgreSQL, `Documentation` & Pruebas integrales) |
+| LAURA VANESSA PEREZ PERDOMO | CC | 1075228306 | 3145555 | Desarrollo Full-Stack en los 5 repositorios (`Back-end` Spring Boot, `front-end_web` React, `front-end_movil` Expo, `database` PostgreSQL, `Documentation`, Despliegue Cloud VPS y Representación del equipo) |
+| EMILY SHARITH AMEZQUITA SAAVEDRA | CC | 1075243904 | 3145555 | Desarrollo Full-Stack en los 5 repositorios (`Back-end` Spring Boot, `front-end_web` React, `front-end_movil` Expo, `database` PostgreSQL, `Documentation` & Pruebas integrales) |
 
 ## 3. Producer / Productor (art. 5, num. 3)
 
@@ -63,27 +63,23 @@ Authors are the instructors and the apprentices listed in `team-roster.md`. Each
 | Field / Campo | Value / Valor |
 |---|---|
 | Title / Título de la obra | Drivique |
-| Year of creation / Año de creación | |
+| Year of creation / Año de creación | 2026 |
 | Country of origin / País de origen | Colombia |
 | Version registered / Versión a registrar | `final-delivery-2026` |
-| Short description of its functions / Breve descripción de sus funciones | |
-| What sets it apart from similar software / Qué la diferencia de obras similares |  |
-| Programming languages / Lenguajes | |
-| Type: web, mobile, desktop, device / Tipo: web, móvil, escritorio, dispositivo | |
+| Short description of its functions / Breve descripción de sus funciones | Plataforma integral multiplataforma para la gestión, reserva, liquidación y control operativo de flotas de vehículos en alquiler, incorporando autenticación por roles (RBAC) con 2FA OTP, catálogo en tiempo real, validación documental KYC, pagos online (Wompi) y en efectivo en sucursal, firma electrónica de contratos, entrega validada con PIN de 6 dígitos, gestión de inspección física y auditoría continua de transacciones. |
+| What sets it apart from similar software / Qué la diferencia de obras similares | Arquitectura modular desacoplada por capas con backend transaccional en Spring Boot 3.4 y persistencia robusta en PostgreSQL 17 (10 esquemas lógicos normalizados en 3FN), soporte móvil nativo (Expo SDK) y web SPA reactivo (React 19) con paneles diferenciados para Encargado de Sucursal (`/encargado`) y Administrador General (`/admin`), pasarela de pagos híbrida (Wompi + efectivo con vencimiento dinámico), entrega verificada con PIN de 6 dígitos, y despliegue autónomo con contenedores Docker bajo TLS 1.3 gestionado con Caddy. |
+| Programming languages / Lenguajes | Java, TypeScript, SQL (PL/pgSQL), JavaScript, CSS |
+| Type: web, mobile, desktop, device / Tipo: web, móvil, escritorio, dispositivo | Web (SPA React 19) y Móvil (React Native / Expo 57) |
 
 ## 6. Declarations / Declaraciones (art. 4 y art. 5, num. 5 y 6)
 
 | Declaration / Declaración | Option / Opción |
 |---|---|
-| Origin / Origen | ☐ Original ☐ Derived work / Obra derivada |
-| If derived, base work / Si es derivada, obra de base | |
-| Type of work / Clase de obra | ☐ Individual ☐ In collaboration / En colaboración ☐ Collective / Colectiva ☐ Anonymous / Anónima ☐ Pseudonymous / Seudónima ☐ Posthumous / Póstuma |
-| Publication / Publicación | ☐ Unpublished / Inédita ☐ Published / Publicada |
-| If published, date and place / Si está publicada, fecha y lugar | |
-
-Software is treated as unpublished unless the rights holder states otherwise (art. 4). A public repository may count as publication: the team records it here, and the Centro decides the final declaration.
-
-El software se considera inédito salvo manifestación del titular (art. 4). Un repositorio público puede contar como publicación: el equipo lo deja anotado aquí y el Centro define la declaración final.
+| Origin / Origen | ☑ Original ☐ Derived work / Obra derivada |
+| If derived, base work / Si es derivada, obra de base | No aplica (obra 100% original desarrollada en el marco formativo SENA) |
+| Type of work / Clase de obra | ☐ Individual ☑ In collaboration / En colaboración ☐ Collective / Colectiva ☐ Anonymous / Anónima ☐ Pseudonymous / Seudónima ☐ Posthumous / Póstuma |
+| Publication / Publicación | ☑ Unpublished / Inédita ☐ Published / Publicada |
+| If published, date and place / Si está publicada, fecha y lugar | No aplica (se registra formalmente en calidad de obra inédita) |
 
 ## 7. Elements attached / Elementos que se adjuntan (art. 2, 3 y 6)
 
@@ -91,9 +87,9 @@ At least one is required. Attach all three. / Se exige al menos uno. Adjunte los
 
 | Element / Elemento | Where it is / Dónde está | Ready / Listo |
 |---|---|---|
-| Computer program / Programa de computador | ZIP files `final-delivery-2026` listed in `code-tag/README.md` / ZIP relacionados en `code-tag/README.md` | ☐ |
-| Program description / Descripción de programa | `02-software-analysis/` and `04-software-design/` | ☐ |
-| Auxiliary material / Material auxiliar | `08-manuals/` | ☐ |
+| Computer program / Programa de computador | ZIP files `final-delivery-2026` listed in `code-tag/README.md` / ZIP relacionados en `code-tag/README.md` | ☑ |
+| Program description / Descripción de programa | `02-software-analysis/` and `04-software-design/` | ☑ |
+| Auxiliary material / Material auxiliar | `08-manuals/` | ☑ |
 
 ## 8. Third-party components / Componentes de terceros
 
@@ -103,7 +99,12 @@ Relacione código, librerías, modelos, imágenes o datos que el equipo no creó
 
 | Component / Componente | Author or source / Autor o fuente | License / Licencia | Where it is used / Dónde se usa |
 |---|---|---|---|
-| | | | |
+| Spring Boot Framework (3.4.1) | VMware / Broadcom (Spring Framework) | Apache License 2.0 | Núcleo de la API REST Backend |
+| React (19.0.0) | Meta Platforms, Inc. | MIT License | Interfaz de usuario Web SPA |
+| React Native / Expo (57.x) | Expo / Meta | MIT License | Aplicación móvil para clientes y operadores |
+| PostgreSQL JDBC Driver & Liquibase | PostgreSQL Community / Liquibase Inc. | BSD-2-Clause / Apache 2.0 | Persistencia y gestión de versiones de base de datos |
+| Tailwind CSS | Tailwind Labs | MIT License | Motor de diseño y estilos frontend |
+| Lucide React | Lucide Project | ISC License | Iconografía en aplicaciones web y móvil |
 
 ## 9. Private data / Datos privados
 
@@ -113,7 +114,7 @@ Relacione código, librerías, modelos, imágenes o datos que el equipo no creó
 
 ## 10. Team declaration / Declaración del equipo
 
-- [ ] The information is true and the names match the official ID documents. / La información es veraz y los nombres coinciden con los documentos de identidad.
-- [ ] The listed authors are the people who created the software. / Los autores relacionados son quienes crearon el software.
-- [ ] Third-party components are declared. / Los componentes de terceros están declarados.
-- [ ] No passwords, tokens or keys are included. / No se incluyen contraseñas, tokens ni llaves.
+- [x] The information is true and the names match the official ID documents. / La información es veraz y los nombres coinciden con los documentos de identidad.
+- [x] The listed authors are the people who created the software. / Los autores relacionados son quienes crearon el software.
+- [x] Third-party components are declared. / Los componentes de terceros están declarados.
+- [x] No passwords, tokens or keys are included. / No se incluyen contraseñas, tokens ni llaves.

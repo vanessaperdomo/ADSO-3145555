@@ -1,12 +1,18 @@
-# Test documentation / Documentación de pruebas
+# Test documentation / Documentación de pruebas — Drivique (ADSO-3145555)
 
 **Training project deliverable / Producto del proyecto formativo:** Documentación de pruebas.
 
 ## Required content / Contenido requerido
 
-- [ ] Test plan / Plan de pruebas
-- [ ] Test cases / Casos de prueba
-- [ ] Test results with evidence / Resultados de las pruebas con evidencia
+- [x] Test plan / Plan de pruebas
+- [x] Test cases / Casos de prueba (incluyendo reserva, pago Wompi/efectivo, KYC, contrato y PIN de entrega de 6 dígitos)
+- [x] Test results with evidence / Resultados de las pruebas con evidencia
+
+## Official Deliverable / Archivo Oficial Entregado
+
+| File / Archivo | Format / Formato | Content / Contenido |
+|---|---|---|
+| [`test-documentation.pdf`](test-documentation.pdf) | PDF | Documento oficial de Plan de Pruebas, Casos de Prueba Funcionales/Integración y Reporte de Resultados. |
 
 ## Format / Formato
 

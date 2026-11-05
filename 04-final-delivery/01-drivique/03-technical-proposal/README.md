@@ -1,11 +1,17 @@
-# Technical proposal / Propuesta técnica
+# Technical proposal / Propuesta técnica — Drivique (ADSO-3145555)
 
 **Training project deliverable / Producto del proyecto formativo:** Documentación de propuesta técnica del software.
 
 ## Required content / Contenido requerido
 
-- [ ] Software technical proposal / Propuesta técnica del software
-- [ ] Selected technologies and why / Tecnologías seleccionadas y su justificación
+- [x] Software technical proposal / Propuesta técnica del software (`technical-proposal.pdf`)
+- [x] Selected technologies and why / Tecnologías seleccionadas, arquitectura, seguridad, estimación económica y justificación
+
+## Official Deliverable / Archivo Oficial Entregado
+
+| File / Archivo | Format / Formato | Content / Contenido |
+|---|---|---|
+| [`technical-proposal.pdf`](technical-proposal.pdf) | PDF | Documento oficial de Propuesta Técnica del Software Drivique (alcance, objetivos técnicos, pila tecnológica, arquitectura, patrones, modelo de datos, seguridad, metodología y presupuesto). |
 
 ## Format / Formato
 
